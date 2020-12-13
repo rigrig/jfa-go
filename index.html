@@ -37,8 +37,14 @@
             .pb-1 {
                 padding-bottom: 1rem;
             }
+            .pl-1 {
+                padding-left: 1rem;
+            }
             .mr-1 {
                 margin-right: 1rem;
+            }
+            .ml-1 {
+                margin-left: 1rem;
             }
             .mb-2 {
                 margin-bottom: 2rem;
@@ -181,6 +187,32 @@
                 width: 100%;
                 justify-content: center;
             }
+            .unfocused {
+                display: none;
+            }
+            .fr {
+                float: right;
+            }
+            .stealth-input-hidden {
+                border-style: none;
+                --fallback-box-shadow: none;
+                --field-hover-box-shadow: none;
+                --field-focus-box-shadow: none;
+                padding-top: 0.1rem;
+                padding-bottom: 0.1rem;
+            }
+            .stealth-input {
+                font-size: 1rem;
+                padding-top: 0.1rem;
+                padding-bottom: 0.1rem;
+                margin-left: 0.5rem;
+                margin-right: 1rem;
+                max-width: 50%;
+            
+            }
+
+
+
         </style>
         <title>{{ .lang.pageTitle }}</title>
     </head>
@@ -201,114 +233,153 @@
                     <span class="button ~neutral !normal mb-1">Theme</span>
                 </div>
             </div>
-            <div class="card ~neutral !high invites mb-1">
-                <span class="heading">Invites</span>
-                <div class="inv">
-                    <div class="card ~neutral !normal inv-header mt-half">
-                        <div class="inv-codearea">
-                            <a href="#" class="code monospace mr-1">ZD8ZeC55Jcpmbtv54FuVM3</a>
-                            <span class="button ~info !normal">Copy</span>
+            <div id="invitesTab" class="unfocused">
+                <div class="card ~neutral !high invites mb-1">
+                    <span class="heading">Invites</span>
+                    <div class="inv">
+                        <div class="card ~neutral !normal inv-header mt-half">
+                            <div class="inv-codearea">
+                                <a href="#" class="code monospace mr-1">ZD8ZeC55Jcpmbtv54FuVM3</a>
+                                <span class="button ~info !normal">Copy</span>
+                            </div>
+                            <div class="inv-infoarea">
+                                <span class="inv-expiry mr-1">Expires in 30m</span>
+                                <span class="button ~critical !normal">Delete</span>
+                                <label>
+                                    <i class="icon icon-arrow-down not-rotated"></i>
+                                    <input type="checkbox" class="toggle-details">
+                                </label>
+                            </div>
                         </div>
-                        <div class="inv-infoarea">
-                            <span class="inv-expiry mr-1">Expires in 30m</span>
-                            <span class="button ~critical !normal">Delete</span>
-                            <label>
-                                <i class="icon icon-arrow-down not-rotated"></i>
-                                <input type="checkbox" class="toggle-details">
-                            </label>
+                        <div class="card ~neutral !normal mt-half inv-details mt-half hidden">
+                            <div class="inv-row">
+                                <div class="inv-profilearea">
+                                    <p class="supra mb-1">Profile</p>
+                                    <div class="select ~neutral !normal inv-profileselect ib">
+                                        <select>
+                                            <option>Friends</option>
+                                            <option>Family</option>
+                                            <option>No Profile</option>
+                                        </select>
+                                    </div>
+                                    <p class="label supra">Notify on:</p>
+                                    <label class="switch block">
+                                        <input type="checkbox" class="inv-notify-expiry">
+                                        <span>On expiry</span>
+                                    </label>
+                                    <label class="switch block">
+                                        <input type="checkbox" class="inv-notify-creation">
+                                        <span>On user creation</span>
+                                    </label>
+                                </div>
+                                <div class="block">
+                                    <p class="supra mb-1">Created <strong class="inv-created">10/12/20 18:46</strong></p>
+                                    <p class="supra mb-1">Remaining uses <strong class="inv-remaining">8</strong></p>
+                                </div>
+                                <div class="card ~neutral !low">
+                                    <strong class="supra table-header">Created users</strong>
+                                    <table class="table inv-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>jeff</td>
+                                                <td>10/12/20 19:00</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card ~neutral !normal mt-half inv-details mt-half hidden">
-                        <div class="inv-row">
-                            <div class="inv-profilearea">
-                                <p class="supra mb-1">Profile</p>
-                                <div class="select ~neutral !normal inv-profileselect ib">
-                                    <select>
-                                        <option>Friends</option>
-                                        <option>Family</option>
-                                        <option>No Profile</option>
-                                    </select>
-                                </div>
-                                <p class="label supra">Notify on:</p>
-                                <label class="switch block">
-                                    <input type="checkbox" class="inv-notify-expiry">
-                                    <span>On expiry</span>
+                </div>
+                <div class="card ~neutral !high create-inv">
+                    <span class="heading">Create</span>
+                    <div class="row">
+                        <div class="card ~neutral !low col">
+                            <label class="label supra" for="inv-days">Days</label>
+                            <div class="select ~neutral !normal mb-1">
+                                <select id="inv-days">
+                                    <option>0</option>
+                                </select>
+                            </div>
+                            <label class="label supra" for="inv-hours">Hours</label>
+                            <div class="select ~neutral !normal mb-1">
+                                <select id="inv-hours">
+                                    <option>0</option>
+                                </select>
+                            </div>
+                            <label class="label supra" for="inv-minutes">Minutes</label>
+                            <div class="select ~neutral !normal mb-1">
+                                <select id="inv-minutes">
+                                    <option>0</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card ~neutral !low col">
+                            <label class="label supra" for="inv-uses">Number of uses</label>
+                            <div class="button-input mb-1">
+                                <input type="number" min="0" id="inv-uses" class="input ~neutral !normal mr-1" value=1>
+                                <label for="inv-inf-uses" class="button ~neutral !normal">
+                                    <span>∞</span>
+                                    <input type="checkbox" class="unfocused" id="inv-inf-uses" aria-label="Set uses to infinite">
                                 </label>
-                                <label class="switch block">
-                                    <input type="checkbox" class="inv-notify-creation">
-                                    <span>On user creation</span>
+                            </div>
+                            <label class="label supra">Profile</label>
+                            <div class="select ~neutral !normal mb-1" id="inv-profile">
+                                <select>
+                                    <option>Friends</option>
+                                    <option>Family</option>
+                                    <option>No Profile</option>
+                                </select>
+                            </div>
+                            <label class="label supra">Send to</label>
+                            <div class="button-input mb-1">
+                                <input type="text" id="inv-email" class="input ~neutral !normal mr-1" placeholder="example@example.com">
+                                <label for="inv-email-enabled" class="button ~neutral !normal">
+                                    <input type="checkbox" id="inv-email-enabled" aria-label="Send to address enabled">
                                 </label>
                             </div>
-                            <div class="block">
-                                <p class="supra mb-1">Created <strong class="inv-created">10/12/20 18:46</strong></p>
-                                <p class="supra mb-1">Remaining uses <strong class="inv-remaining">8</strong></p>
-                            </div>
-                            <div class="card ~neutral !low">
-                                <strong class="supra table-header">Created users</strong>
-                                <table class="table inv-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>jeff</td>
-                                            <td>10/12/20 19:00</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                            <span class="button ~positive !normal supra full-width button-lg">Create</span>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="card ~neutral !high create-inv">
-                <span class="heading">Create</span>
-                <div class="row">
-                    <div class="card ~neutral !low col">
-                        <label class="label supra" for="inv-days">Days</label>
-                        <div class="select ~neutral !normal mb-1">
-                            <select id="inv-days">
-                                <option>0</option>
-                            </select>
+            <div id="accountsTab">
+                <div class="card ~neutral !high accounts mb-1">
+                    <span class="heading">Accounts</span>
+                    <div class="card ~neutral !normal accounts-header mt-half">
+                        <div class="fr">
+                            <span class="button ~neutral !normal" id="accounts-add-user">Add User</span>
+                            <span class="button ~positive !normal" id="accounts-modify-user">Modify Settings</span>
+                            <span class="button ~critical !normal" id="accounts-delte-user">Delete User</span>
                         </div>
-                        <label class="label supra" for="inv-hours">Hours</label>
-                        <div class="select ~neutral !normal mb-1">
-                            <select id="inv-hours">
-                                <option>0</option>
-                            </select>
-                        </div>
-                        <label class="label supra" for="inv-minutes">Minutes</label>
-                        <div class="select ~neutral !normal mb-1">
-                            <select id="inv-minutes">
-                                <option>0</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="card ~neutral !low col">
-                        <label class="label supra" for="inv-uses">Number of uses</label>
-                        <div class="button-input mb-1">
-                            <input type="number" id="inv-uses" class="input ~neutral !normal mr-1" value=1>
-                            <span id="inv-inf-uses" class="button ~neutral !normal" aria-label="Infinite uses">∞</span>
-                        </div>
-                        <label class="label supra">Profile</label>
-                        <div class="select ~neutral !normal mb-1" id="inv-profile">
-                            <select>
-                                <option>Friends</option>
-                                <option>Family</option>
-                                <option>No Profile</option>
-                            </select>
-                        </div>
-                        <label class="label supra">Send to</label>
-                        <div class="button-input mb-1">
-                            <input type="text" id="inv-email" class="input ~neutral !normal mr-1" placeholder="example@example.com">
-                            <span id="inv-email-enabled" class="button ~neutral !normal" aria-label="Send to enabled">✓</span>
-                        </div>
-                        <span class="button ~positive !normal supra full-width button-lg">Create</span>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" value="" id="accounts-select-all"></th>
+                                    <th>Username</th>
+                                    <th>Email Address</th>
+                                    <th>Last Active</th>
+                                </tr>
+                            </thead>
+                            <tbody id="accounts-list">
+                                <tr>
+                                    <td><input type="checkbox" value=""></td>
+                                    <td>Person <span class="chip ~info ml-1">Admin</span></td>
+                                    <td><i class="icon icon-edit"></i><input type="email" class="input ~neutral !normal stealth-input stealth-input-hidden" value="email@addr.ess" readonly></td>
+                                    <td>13/12/20 00:39</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+
+
             </div>
         </div>
         <script>
@@ -349,21 +420,70 @@
                     //el.classList.toggle("hidden");
                 };
             }
-            document.getElementById('inv-inf-uses').onclick = function () {
+            const checkInfUses = function (check, mode = 2) {
                 const uses = document.getElementById('inv-uses');
-                uses.disabled = (this.classList.contains('!normal'));
-                this.classList.toggle('!normal');
-                this.classList.toggle('!high');
-                this.classList.toggle('inf');
+                if (mode == 2) {
+                    uses.disabled = check.checked;
+                    check.parentElement.classList.toggle('!normal');
+                    check.parentElement.classList.toggle('!high');
+                } else if (mode == 1) {
+                    uses.disabled = true;
+                    check.checked = true;
+                    check.parentElement.classList.remove('!normal');
+                    check.parentElement.classList.add('!high');
+                } else {
+                    uses.disabled = false;
+                    check.checked = false;
+                    check.parentElement.classList.remove('!high');
+                    check.parentElement.classList.add('!normal');
+                }
+            };
+        
+            let invInfUses = document.getElementById('inv-inf-uses');
+            invInfUses.onclick = () => { checkInfUses(invInfUses, 2); };
+
+            const checkEmailEnabled = function (check, mode = 2) {
+                const input = document.getElementById('inv-email');
+                if (mode == 2) {
+                    input.disabled = !check.checked;
+                    check.parentElement.classList.toggle('!normal');
+                    check.parentElement.classList.toggle('!high');
+                } else if (mode == 1) {
+                    input.disabled = false;
+                    check.checked = true;
+                    check.parentElement.classList.remove('!normal');
+                    check.parentElement.classList.add('!high');
+                } else {
+                    input.disabled = true;
+                    check.checked = false;
+                    check.parentElement.classList.remove('!high');
+                    check.parentElement.classList.add('!normal');
+                }
+            };
+            let invEmailEnabled = document.getElementById('inv-email-enabled')
+            invEmailEnabled.onchange = () => { checkEmailEnabled(invEmailEnabled, 2); };
+
+            checkInfUses(invInfUses, 0);
+            checkEmailEnabled(invEmailEnabled, 0);
+            
+            const loadAccounts = function () {
+                const rows = document.getElementById("accounts-list").children;
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    const editButton = row.querySelector(".icon");
+                    const emailInput = row.querySelector(".input");
+                    editButton.onclick = function () {
+                        emailInput.classList.toggle('stealth-input-hidden');
+                        emailInput.readOnly = !emailInput.readOnly;
+                        editButton.classList.toggle('icon-edit');
+                        editButton.classList.toggle('icon-check');
+                    };
+                }
             };
 
-            document.getElementById('inv-email-enabled').onclick = function () {
-                const uses = document.getElementById('inv-email');
-                uses.disabled = !(this.classList.contains('!normal'));
-                this.classList.toggle('!normal');
-                this.classList.toggle('!high');
-                this.classList.toggle('enabled');
-            };
+            loadAccounts();
+
+                    
 
         </script>
     </body>
