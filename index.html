@@ -34,6 +34,9 @@
             .mb-1 {
                 margin-bottom: 1rem;
             }
+            .mb-half {
+                margin-bottom: 0.5rem;
+            }
             .pb-1 {
                 padding-bottom: 1rem;
             }
@@ -48,6 +51,9 @@
             }
             .mb-2 {
                 margin-bottom: 2rem;
+            }
+            .mt-half {
+                margin-top: 0.5rem;
             }
             .inv-codearea {
                 /*width: 40%;*/
@@ -210,8 +216,29 @@
                 max-width: 50%;
             
             }
-
-
+            .settings-section-button {
+                box-sizing: border-box;
+                width: 100%;
+                height: 2.5rem;
+                --button-filter-brightness: 90%;
+            }
+            .settings-section-button.selected {
+                --button-filter-brightness: 85%;
+                filter: brightness(85%);
+            }
+            .text-critical {
+                color: var(--color-critical-normal-content);
+            }
+            .aside.small {
+                font-size: 0.8rem;
+                padding: 0.8rem;
+            }
+            .setting {
+                margin-bottom: 0.25rem;
+            }
+            .support.large {
+                font-size: 1rem;
+            }
 
         </style>
         <title>{{ .lang.pageTitle }}</title>
@@ -221,9 +248,9 @@
             <div class="relative mb-1">
                 <header class="flex flex-wrap items-center justify-between">
                     <div class="text-neutral-700">
-                        <span class="tabText portal ~positive active">Invites</span>
-                        <span class="tabText portal">Accounts</span>
-                        <span class="tabText portal">Settings</span>
+                        <span id="invitesTab-button" class="tabText portal ~positive active">Invites</span>
+                        <span id="accountsTab-button" class="tabText portal">Accounts</span>
+                        <span id="settingsTab-button" class="tabText portal">Settings</span>
                     </div>
                 </header>
             </div>
@@ -349,15 +376,15 @@
                     </div>
                 </div>
             </div>
-            <div id="accountsTab">
+            <div id="accountsTab" class="unfocused">
                 <div class="card ~neutral !high accounts mb-1">
                     <span class="heading">Accounts</span>
+                    <div class="fr">
+                        <span class="button ~neutral !normal" id="accounts-add-user">Add User</span>
+                        <span class="button ~positive !normal" id="accounts-modify-user">Modify Settings</span>
+                        <span class="button ~critical !normal" id="accounts-delte-user">Delete User</span>
+                    </div>
                     <div class="card ~neutral !normal accounts-header mt-half">
-                        <div class="fr">
-                            <span class="button ~neutral !normal" id="accounts-add-user">Add User</span>
-                            <span class="button ~positive !normal" id="accounts-modify-user">Modify Settings</span>
-                            <span class="button ~critical !normal" id="accounts-delte-user">Delete User</span>
-                        </div>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -374,13 +401,54 @@
                                     <td><i class="icon icon-edit"></i><input type="email" class="input ~neutral !normal stealth-input stealth-input-hidden" value="email@addr.ess" readonly></td>
                                     <td>13/12/20 00:39</td>
                                 </tr>
+                                <tr>
+                                    <td><input type="checkbox" value=""></td>
+                                    <td>Other person</td>
+                                    <td><i class="icon icon-edit"></i><input type="email" class="input ~neutral !normal stealth-input stealth-input-hidden" value="eee@ma.il" readonly></td>
+                                    <td>12/12/20 17:46</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-
-
             </div>
+            <div id="settingsTab">
+                <div class="card ~neutral !high settings">
+                    <span class="heading">Settings</span>
+                    <div class="row">
+                        <div class="card ~neutral !normal col">
+                            <aside class="aside small ~info mb-half">Note: <sup class="text-critical">*</sup> indicates a required field, <sup class="text-critical">R</sup> indicates changes require a restart.</aside> 
+                            <span class="button ~neutral !normal settings-section-button mb-half">About</span>
+                            <span class="button ~neutral !normal settings-section-button mb-half selected">User Profiles</span>
+                        </div>
+                        <div class="card ~neutral !low col">
+                            <div class="settings-section">
+                                <p class="support large mb-half">Settings section description.</p>
+                                <div class="setting">
+                                    <label class="label" for="settings-select">Select <sup class="text-critical">R</sup></label>
+                                    <div class="select ~neutral !normal mt-half">
+                                        <select id="settings-select">
+                                            <option>Option 1</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="setting">
+                                    <label class="label" for="settings-input">Input <sup class="text-critical">*</sup></label>
+                                    <input type="text" class="input ~neutral !normal mt-half" placeholder="Value">
+                                </div>
+                                <div class="setting">
+                                    <label class="switch settings">
+                                        <input type="checkbox" id="settings-check">
+                                        <span>Checkbox <sup class="text-critical">R</sup></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
         <script>
             const whichTransitionEvent = () => {
@@ -483,9 +551,25 @@
 
             loadAccounts();
 
-                    
 
+            tabs = ["invitesTab", "accountsTab", "settingsTab"]
+            for (let tab of tabs) {
+                document.getElementById(`${tab}-button`).onclick = function () {
+                    for (let t of tabs) {
+                        const tabEl = document.getElementById(t);
+                        const tabButtonEl = document.getElementById(`${t}-button`);
+                        if (t == tab) {
+                            tabButtonEl.classList.add("active", "~positive");
+                            tabEl.classList.remove("unfocused");
+
+                        } else {
+                            tabButtonEl.classList.remove("active");
+                            tabButtonEl.classList.remove("~positive");
+                            tabEl.classList.add("unfocused");
+                        }
+                    }
+                }
+            }
         </script>
     </body>
 </html>
-
