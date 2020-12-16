@@ -3,247 +3,18 @@
     <head>
         <link rel="stylesheet" type="text/css" href="node_modules/a17t/dist/a17t.css">
         <link rel="stylesheet" type="text/css" href="node_modules/icons.css/dist/icons.css">
-        <style>
-            .pageContainer {
-                margin: 5% 20% 5% 20%;
-            }
-            @media (max-width: 1100px) {
-                .pageContainer {
-                    margin: 2%;
-                }
-            }
-            /*input::-webkit-outer-spin-button,
-            input::-webkit-inner-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
-            }
-
-            input[type=number] {
-                -moz-appearance: textfield;
-            }*/
-            .contactBox {
-                color: grey;
-            }
-            #container {
-                margin-top: 5%;
-                margin-bottom: 5%;
-            }
-            .tabText {
-                font-size: 2rem;
-            }
-            .mb-1 {
-                margin-bottom: 1rem;
-            }
-            .mb-half {
-                margin-bottom: 0.5rem;
-            }
-            .pb-1 {
-                padding-bottom: 1rem;
-            }
-            .pl-1 {
-                padding-left: 1rem;
-            }
-            .mr-1 {
-                margin-right: 1rem;
-            }
-            .ml-1 {
-                margin-left: 1rem;
-            }
-            .mb-2 {
-                margin-bottom: 2rem;
-            }
-            .mt-half {
-                margin-top: 0.5rem;
-            }
-            .inv-codearea {
-                /*width: 40%;*/
-            }
-            .al {
-                text-align: left;
-            }
-            .inline-block {
-                display: inline-block;
-            }
-            .ar {
-                text-align: right;
-            }
-            .monospace {
-                background-color: inherit;
-            }
-            .mt-half {
-                margin-top: 0.5rem;
-            }
-            .table-header { 
-                padding-left: 0.5rem;
-                padding-bottom: 0.2rem;
-            }
-            .inv {
-                overflow: hidden;
-            }
-            .inv-header {
-                display: flex;
-                justify-content: space-between;
-            }
-            .button-input {
-                display: flex;
-                justify-content: space-between;
-            }
-            /*.inv-details {
-                display: flex;
-                justify-content: space-between;
-            }*/
-            /*.invites {
-                transition: max-height 1s cubic-bezier(0.550, 0.055, 0.675, 0.190);
-            }*/
-            .inv-details {
-            }
-            .inv-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: top;
-            }
-            /*.inv-profilearea {
-                align-items: top;
-            }*/
-            .ib {
-                display: inline-block;
-            }
-            .inv-profileselect {
-                min-width: 100%;
-            }
-            .inv-table {
-                font-size: 0.8rem;
-            }
-            .no-lp {
-                padding-left: 0px;
-            }
-            .block { display: block; }
-            .hiding {
-                animation: slide-out 0.1s cubic-bezier(0.550, 0.055, 0.675, 0.190) forwards;
-            }
-            .hidden {
-                display: none;
-            }
-            .visible {
-                display: block;
-                /*animation: fade-in 0.2s cubic-bezier(0.550, 0.055, 0.675, 0.190) forwards;*/
-            }
-            @keyframes fade-in {
-                from {
-                    opacity: 0;
-                    visibility: hidden;
-                }
-                to {
-                    opacity: 1;
-                    visibility: visible;
-                }
-            }
-            @keyframes slide-out {
-                from {
-                    opacity: 1;
-                    visibility: visible;
-                }
-                to {
-                    opacity: 0;
-                    visibility: hidden;
-                }
-            }
-            .toggle-details {
-                display: none;
-            }
-            .rotated {
-                transform: rotate(180deg);
-            -webkit-transition: all 0.3s cubic-bezier(0,.89,.27,.92);
-            -moz-transition: all 0.3s cubic-bezier(0,.89,.27,.92);
-             -o-transition: all 0.3s cubic-bezier(0,.89,.27,.92);
-                transition: all 0.3s cubic-bezier(0,.89,.27,.92); /* easeInOutQuart */
-            }
-
-            .not-rotated {
-                transform: rotate(0deg);
-            -webkit-transition: all 0.3s cubic-bezier(0,.89,.27,.92);
-            -moz-transition: all 0.3s cubic-bezier(0,.89,.27,.92);
-             -o-transition: all 0.3s cubic-bezier(0,.89,.27,.92);
-                transition: all 0.3s cubic-bezier(0,.89,.27,.92); /* easeInOutQuart */
-            }
-            .row {
-                display: flex;
-                flex-wrap: wrap;
-            }
-            .col {
-                flex: 1;
-                margin: 0.5rem;
-            }
-            @media screen and (max-width: 400px) {
-                .row {
-                    flex-direction: column;
-                }
-                .col {
-                    flex: 45%;
-                }
-            }
-            .input { 
-                box-sizing: border-box;
-            }
-            .button-lg {
-                height: 3rem;
-            }
-            .full-width {
-                box-sizing: border-box;
-                width: 100%;
-                justify-content: center;
-            }
-            .unfocused {
-                display: none;
-            }
-            .fr {
-                float: right;
-            }
-            .stealth-input-hidden {
-                border-style: none;
-                --fallback-box-shadow: none;
-                --field-hover-box-shadow: none;
-                --field-focus-box-shadow: none;
-                padding-top: 0.1rem;
-                padding-bottom: 0.1rem;
-            }
-            .stealth-input {
-                font-size: 1rem;
-                padding-top: 0.1rem;
-                padding-bottom: 0.1rem;
-                margin-left: 0.5rem;
-                margin-right: 1rem;
-                max-width: 50%;
-            
-            }
-            .settings-section-button {
-                box-sizing: border-box;
-                width: 100%;
-                height: 2.5rem;
-                --button-filter-brightness: 90%;
-            }
-            .settings-section-button.selected {
-                --button-filter-brightness: 85%;
-                filter: brightness(85%);
-            }
-            .text-critical {
-                color: var(--color-critical-normal-content);
-            }
-            .aside.small {
-                font-size: 0.8rem;
-                padding: 0.8rem;
-            }
-            .setting {
-                margin-bottom: 0.25rem;
-            }
-            .support.large {
-                font-size: 1rem;
-            }
-
-        </style>
-        <title>{{ .lang.pageTitle }}</title>
+        <link rel="stylesheet" type="text/css" href="base.css">
+        <title>jfa-no</title>
     </head>
     <body class="max-w-full overflow-x-hidden section">
+        <div id="login-modal" class="modal">
+            <form class="modal-content card" id="login-form" href="">
+                <span class="heading">Login</span>
+                <input type="text" class="field input ~neutral !high mt-half mb-1" placeholder="username" id="login-user">
+                <input type="password" class="field input ~neutral !high mb-1" placeholder="password" id="login-password">
+                <input type="submit" class="button ~positive !normal full-width supra submit" value="Login">
+            </form>
+        </div>
         <div class="pageContainer max-w-screen-lg px-6 py-4 mx-auto lg:mx-auto md:py-8">
             <div class="relative mb-1">
                 <header class="flex flex-wrap items-center justify-between">
@@ -258,6 +29,7 @@
                 <div class="text-neutral-700">
                     <span class="button ~critical !normal mb-1">Logout</span>
                     <span class="button ~neutral !normal mb-1">Theme</span>
+                    <span id="modalButton" class="button ~neutral !normal mb-1">modalTest</span>
                 </div>
             </div>
             <div id="invitesTab" class="unfocused">
@@ -570,6 +342,24 @@
                     }
                 }
             }
+            function modalToggle(modal) {
+                if (modal.classList.contains('modal-shown')) {
+                    modal.classList.add('modal-hiding');
+                    let listenerFunc = function () {
+                        modal.classList.remove('modal-shown');
+                        modal.classList.remove('modal-hiding');
+                        modal.removeEventListener(transitionEnd, listenerFunc);
+                    };
+                    modal.addEventListener(transitionEnd, listenerFunc, false);
+                } else {
+                    modal.classList.add('modal-shown');
+                }
+            }
+            document.getElementById('modalButton').onclick = () => { modalToggle(document.getElementById('login-modal')); };
+            document.getElementById('login-form').addEventListener('submit', ev => {
+                ev.preventDefault();
+                modalToggle(document.getElementById('login-modal'));
+            });
         </script>
     </body>
 </html>
