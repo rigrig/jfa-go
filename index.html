@@ -7,13 +7,31 @@
         <title>jfa-no</title>
     </head>
     <body class="max-w-full overflow-x-hidden section">
-        <div id="login-modal" class="modal">
-            <form class="modal-content card" id="login-form" href="">
+        <div id="modal-login" class="modal">
+            <form class="modal-content card" id="form-login" href="">
                 <span class="heading">Login</span>
                 <input type="text" class="field input ~neutral !high mt-half mb-1" placeholder="username" id="login-user">
                 <input type="password" class="field input ~neutral !high mb-1" placeholder="password" id="login-password">
                 <input type="submit" class="button ~positive !normal full-width supra submit" value="Login">
             </form>
+        </div>
+        <div id="modal-add-user" class="modal">
+            <form class="modal-content card" id="form-add-user" href="">
+                <span class="heading">New User <span class="modal-close">&times;</span></span>
+                <input type="text" class="field input ~neutral !high mt-half mb-1" placeholder="username" id="add-user-user">
+                <input type="password" class="field input ~neutral !high mb-1" placeholder="password" id="add-user-password">
+                <input type="submit" class="button ~positive !normal full-width supra submit" value="Create">
+            </form>
+        </div>
+        <div id="modal-about" class="modal">
+            <div class="modal-content content card">
+                <span class="heading">About <span class="modal-close">&times;</span></span>
+                <img src="images/banner.svg" class="mt-1" alt="jfa-go banner">
+                <p><a href="https://github.com/hrfee/jfa-go/tree/a17t-redesign">Github (ICON)</a></p>
+                <p>Version <span class="code monospace">a17t-redesign</span></p>
+                <p>Commit <span class="code monospace">cb28097</span></p>
+                <p><a href="https://github.com/hrfee/jfa-go/blob/main/LICENSE">Available under the MIT License.</a></p>
+            </div>
         </div>
         <div class="pageContainer max-w-screen-lg px-6 py-4 mx-auto lg:mx-auto md:py-8">
             <div class="relative mb-1">
@@ -29,7 +47,7 @@
                 <div class="text-neutral-700">
                     <span class="button ~critical !normal mb-1">Logout</span>
                     <span class="button ~neutral !normal mb-1">Theme</span>
-                    <span id="modalButton" class="button ~neutral !normal mb-1">modalTest</span>
+                    <span id="modalButton" class="button ~neutral !normal mb-1">Trigger Login</span>
                 </div>
             </div>
             <div id="invitesTab" class="unfocused">
@@ -190,7 +208,7 @@
                     <div class="row">
                         <div class="card ~neutral !normal col">
                             <aside class="aside small ~info mb-half">Note: <sup class="text-critical">*</sup> indicates a required field, <sup class="text-critical">R</sup> indicates changes require a restart.</aside> 
-                            <span class="button ~neutral !normal settings-section-button mb-half">About</span>
+                            <span class="button ~neutral !normal settings-section-button mb-half" id="setting-about">About</span>
                             <span class="button ~neutral !normal settings-section-button mb-half selected">User Profiles</span>
                         </div>
                         <div class="card ~neutral !low col">
@@ -222,144 +240,7 @@
             </div>
 
         </div>
-        <script>
-            const whichTransitionEvent = () => {
-                const el = document.createElement("fakeElement");
-                if (el.style["animation"] !== void 0) {
-                    return "animationend";
-                }
-                return "webkitAnimationEnd";
-            }
-            var transitionEnd = whichTransitionEvent();
-            const toggles = document.getElementsByClassName('toggle-details');
-            for (let toggle of toggles) {
-                console.log(toggle);
-                toggle.onclick = () => {
-                    const el = toggle.parentElement.parentElement.parentElement.nextElementSibling
-                    const container = toggle.parentElement.parentElement.parentElement.parentElement;
-                    if (el.classList.contains("visible")) {
-                        el.classList.toggle("visible");
-                        //el.classList.toggle("hiding");
-                        //const listenerFunc = function(event) { el.classList.toggle("hidden"); el.classList.toggle("hiding"); el.removeEventListener(transitionEnd, listenerFunc); };
-                        el.classList.toggle("hidden");
-                        // el.addEventListener(transitionEnd, listenerFunc, false);
-                    } else {
-                        el.classList.toggle("hidden");
-                        //const height = parseInt(container.clientHeight, 10);
-                        //const val = `${height + el.getBoundingClientRect().height}px`;
-                        //console.log('showing ', val);
-                        //container.style.height = val;
-                        // let maxHeight = container.style.maxHeight || "0";
-                        // const mheight = parseInt(maxHeight, 10)
-                        // container.style.maxHeight = `${mheight + el.getBoundingClientRect().height}px`;
-                        el.classList.toggle("visible");
-                    }
-                    toggle.previousElementSibling.classList.toggle("rotated");
-                    toggle.previousElementSibling.classList.toggle("not-rotated");
-                    //el.classList.toggle("visible");
-                    //el.classList.toggle("hidden");
-                };
-            }
-            const checkInfUses = function (check, mode = 2) {
-                const uses = document.getElementById('inv-uses');
-                if (mode == 2) {
-                    uses.disabled = check.checked;
-                    check.parentElement.classList.toggle('!normal');
-                    check.parentElement.classList.toggle('!high');
-                } else if (mode == 1) {
-                    uses.disabled = true;
-                    check.checked = true;
-                    check.parentElement.classList.remove('!normal');
-                    check.parentElement.classList.add('!high');
-                } else {
-                    uses.disabled = false;
-                    check.checked = false;
-                    check.parentElement.classList.remove('!high');
-                    check.parentElement.classList.add('!normal');
-                }
-            };
-        
-            let invInfUses = document.getElementById('inv-inf-uses');
-            invInfUses.onclick = () => { checkInfUses(invInfUses, 2); };
-
-            const checkEmailEnabled = function (check, mode = 2) {
-                const input = document.getElementById('inv-email');
-                if (mode == 2) {
-                    input.disabled = !check.checked;
-                    check.parentElement.classList.toggle('!normal');
-                    check.parentElement.classList.toggle('!high');
-                } else if (mode == 1) {
-                    input.disabled = false;
-                    check.checked = true;
-                    check.parentElement.classList.remove('!normal');
-                    check.parentElement.classList.add('!high');
-                } else {
-                    input.disabled = true;
-                    check.checked = false;
-                    check.parentElement.classList.remove('!high');
-                    check.parentElement.classList.add('!normal');
-                }
-            };
-            let invEmailEnabled = document.getElementById('inv-email-enabled')
-            invEmailEnabled.onchange = () => { checkEmailEnabled(invEmailEnabled, 2); };
-
-            checkInfUses(invInfUses, 0);
-            checkEmailEnabled(invEmailEnabled, 0);
-            
-            const loadAccounts = function () {
-                const rows = document.getElementById("accounts-list").children;
-                for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i];
-                    const editButton = row.querySelector(".icon");
-                    const emailInput = row.querySelector(".input");
-                    editButton.onclick = function () {
-                        emailInput.classList.toggle('stealth-input-hidden');
-                        emailInput.readOnly = !emailInput.readOnly;
-                        editButton.classList.toggle('icon-edit');
-                        editButton.classList.toggle('icon-check');
-                    };
-                }
-            };
-
-            loadAccounts();
-
-
-            tabs = ["invitesTab", "accountsTab", "settingsTab"]
-            for (let tab of tabs) {
-                document.getElementById(`${tab}-button`).onclick = function () {
-                    for (let t of tabs) {
-                        const tabEl = document.getElementById(t);
-                        const tabButtonEl = document.getElementById(`${t}-button`);
-                        if (t == tab) {
-                            tabButtonEl.classList.add("active", "~positive");
-                            tabEl.classList.remove("unfocused");
-
-                        } else {
-                            tabButtonEl.classList.remove("active");
-                            tabButtonEl.classList.remove("~positive");
-                            tabEl.classList.add("unfocused");
-                        }
-                    }
-                }
-            }
-            function modalToggle(modal) {
-                if (modal.classList.contains('modal-shown')) {
-                    modal.classList.add('modal-hiding');
-                    let listenerFunc = function () {
-                        modal.classList.remove('modal-shown');
-                        modal.classList.remove('modal-hiding');
-                        modal.removeEventListener(transitionEnd, listenerFunc);
-                    };
-                    modal.addEventListener(transitionEnd, listenerFunc, false);
-                } else {
-                    modal.classList.add('modal-shown');
-                }
-            }
-            document.getElementById('modalButton').onclick = () => { modalToggle(document.getElementById('login-modal')); };
-            document.getElementById('login-form').addEventListener('submit', ev => {
-                ev.preventDefault();
-                modalToggle(document.getElementById('login-modal'));
-            });
-        </script>
+        <script src="modal.js"></script>
+        <script src="main.js"></script>
     </body>
 </html>
