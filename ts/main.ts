@@ -96,6 +96,37 @@ const loadAccounts = function () {
 
 loadAccounts();
 
+const modifySettingsSource = function () {
+    const profile = document.getElementById('radio-use-profile') as HTMLInputElement;
+    const user = document.getElementById('radio-use-user') as HTMLInputElement;
+    const profileSelect = document.getElementById('modify-user-profiles') as HTMLDivElement;
+    const userSelect = document.getElementById('modify-user-users') as HTMLDivElement;
+    (user.nextElementSibling as HTMLSpanElement).classList.toggle('!normal');
+    (user.nextElementSibling as HTMLSpanElement).classList.toggle('!high');
+    (profile.nextElementSibling as HTMLSpanElement).classList.toggle('!normal');
+    (profile.nextElementSibling as HTMLSpanElement).classList.toggle('!high');
+    profileSelect.classList.toggle('hidden');
+    userSelect.classList.toggle('hidden');
+}
+
+const radioUseProfile = document.getElementById('radio-use-profile') as HTMLInputElement;
+radioUseProfile.addEventListener("change", modifySettingsSource);
+radioUseProfile.checked = true;
+const radioUseUser = document.getElementById('radio-use-user') as HTMLInputElement;
+radioUseUser.addEventListener("change", modifySettingsSource);
+radioUseUser.checked = false;
+
+const checkDeleteUserNotify = function () {
+    if ((document.getElementById('delete-user-notify') as HTMLInputElement).checked) {
+        document.getElementById('textarea-delete-user').classList.remove('hidden');
+    } else {
+        document.getElementById('textarea-delete-user').classList.add('hidden');
+    }
+};
+
+(document.getElementById('delete-user-notify') as HTMLInputElement).onchange = checkDeleteUserNotify;
+checkDeleteUserNotify();
+
 const tabs = ["invitesTab", "accountsTab", "settingsTab"]
 for (let tab of tabs) {
     (document.getElementById(`${tab}-button`) as HTMLSpanElement).onclick = function () {
@@ -124,4 +155,19 @@ document.getElementById('form-add-user').addEventListener('submit', modalAddUser
 
 const modalAbout = new Modal(document.getElementById('modal-about'));
 (document.getElementById('setting-about') as HTMLSpanElement).onclick = modalAbout.toggle;
+
+const modalModifyUser = new Modal(document.getElementById('modal-modify-user'));
+document.getElementById('form-modify-user').addEventListener('submit', modalModifyUser.close);
+(document.getElementById('accounts-modify-user') as HTMLSpanElement).onclick = modalModifyUser.toggle;
+
+const modalDeleteUser = new Modal(document.getElementById('modal-delete-user'));
+document.getElementById('form-delete-user').addEventListener('submit', modalDeleteUser.close);
+(document.getElementById('accounts-delete-user') as HTMLSpanElement).onclick = modalDeleteUser.toggle;
+
+const modalRestart = new Modal(document.getElementById('modal-restart'));
+
+const modalRefresh = new Modal(document.getElementById('modal-refresh'));
+
+const modalOmbiDefaults = new Modal(document.getElementById('modal-ombi-defaults'));
+document.getElementById('form-ombi-defaults').addEventListener('submit', modalOmbiDefaults.close);
 
