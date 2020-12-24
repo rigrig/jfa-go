@@ -1,4 +1,15 @@
+@import "node_modules/a17t/dist/a17t.css";
+@import "node_modules/icons.css/dist/icons.css";
 @import "modal.css";
+@import "dark.css";
+
+.light-theme {
+    --settings-section-button-filter: 90%;
+}
+
+.body {
+    background-color: #101010;
+}
 
 .pageContainer {
     margin: 5% 20% 5% 20%;
@@ -8,15 +19,6 @@
         margin: 2%;
     }
 }
-/*input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-input[type=number] {
-    -moz-appearance: textfield;
-}*/
 .contactBox {
     color: grey;
 }
@@ -77,7 +79,7 @@ input[type=number] {
     padding-bottom: 0.2rem;
 }
 .inv {
-    overflow: hidden;
+    overflow: visible;
 }
 .inv-header {
     display: flex;
@@ -87,23 +89,11 @@ input[type=number] {
     display: flex;
     justify-content: space-between;
 }
-/*.inv-details {
-    display: flex;
-    justify-content: space-between;
-}*/
-/*.invites {
-    transition: max-height 1s cubic-bezier(0.550, 0.055, 0.675, 0.190);
-}*/
-.inv-details {
-}
 .inv-row {
     display: flex;
     justify-content: space-between;
     align-items: top;
 }
-/*.inv-profilearea {
-    align-items: top;
-}*/
 .ib {
     display: inline-block;
 }
@@ -224,11 +214,27 @@ input[type=number] {
     box-sizing: border-box;
     width: 100%;
     height: 2.5rem;
-    --button-filter-brightness: 90%;
+    background-color: rgba(0, 0, 0, 0);
+}
+.settings-section-button:hover {
+    box-sizing: border-box;
+    width: 100%;
+    height: 2.5rem;
+    background-color: var(--color-neutral-normal-fill);
+    filter: brightness(var(--settings-section-button-filter)) !important;
+
+}
+.settings-section-button:focus {
+    box-sizing: border-box;
+    width: 100%;
+    height: 2.5rem;
+    background-color: var(--color-neutral-normal-fill);
+    filter: brightness(var(--settings-section-button-filter)) !important;
 }
 .settings-section-button.selected {
-    --button-filter-brightness: 85%;
-    filter: brightness(85%);
+    background-color: var(--color-neutral-normal-fill);
+    --button-filter-brightness: var(--settings-section-button-filter);
+    filter: brightness(var(--settings-section-button-filter)) !important;
 }
 .text-critical {
     color: var(--color-critical-normal-content);
@@ -264,4 +270,12 @@ input[type=number] {
 
 .textarea {
     resize: vertical;
+}
+
+select {
+    color: inherit;
+}
+
+input {
+    color: inherit;
 }

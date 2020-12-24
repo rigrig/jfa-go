@@ -9,6 +9,16 @@ interface ArrayConstructor {
 
 declare var window: Window;
 
+function toggleTheme() {
+    document.documentElement.classList.toggle('dark-theme');
+    document.documentElement.classList.toggle('light-theme');
+    localStorage.setItem('theme', document.documentElement.classList.contains('dark-theme') ? "dark" : "light");
+}
+
+if (localStorage.getItem('theme') == "dark") { document.documentElement.classList.add('dark-theme'); document.documentElement.classList.remove('light-theme'); }
+
+(document.getElementById('button-theme') as HTMLSpanElement).onclick = toggleTheme;
+
 const whichAnimationEvent = () => {
     const el = document.createElement("fakeElement");
     if (el.style["animation"] !== void 0) {
@@ -134,11 +144,11 @@ for (let tab of tabs) {
             const tabEl = document.getElementById(t) as HTMLDivElement;
             const tabButtonEl = document.getElementById(`${t}-button`) as HTMLSpanElement;
             if (t == tab) {
-                tabButtonEl.classList.add("active", "~positive");
+                tabButtonEl.classList.add("active", "~urge");
                 tabEl.classList.remove("unfocused");
             } else {
                 tabButtonEl.classList.remove("active");
-                tabButtonEl.classList.remove("~positive");
+                tabButtonEl.classList.remove("~urge");
                 tabEl.classList.add("unfocused");
             }
         }

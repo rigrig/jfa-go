@@ -1,8 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light-theme">
     <head>
-        <link rel="stylesheet" type="text/css" href="node_modules/a17t/dist/a17t.css">
-        <link rel="stylesheet" type="text/css" href="node_modules/icons.css/dist/icons.css">
         <link rel="stylesheet" type="text/css" href="base.css">
         <title>jfa-no</title>
     </head>
@@ -12,7 +10,7 @@
                 <span class="heading">Login</span>
                 <input type="text" class="field input ~neutral !high mt-half mb-1" placeholder="username" id="login-user">
                 <input type="password" class="field input ~neutral !high mb-1" placeholder="password" id="login-password">
-                <input type="submit" class="button ~positive !normal full-width center supra submit" value="Login">
+                <input type="submit" class="button ~urge !normal full-width center supra submit" value="Login">
             </form>
         </div>
         <div id="modal-add-user" class="modal">
@@ -20,7 +18,7 @@
                 <span class="heading">New User <span class="modal-close">&times;</span></span>
                 <input type="text" class="field input ~neutral !high mt-half mb-1" placeholder="username" id="add-user-user">
                 <input type="password" class="field input ~neutral !high mb-1" placeholder="password" id="add-user-password">
-                <input type="submit" class="button ~positive !normal full-width center supra submit" value="Create">
+                <input type="submit" class="button ~urge !normal full-width center supra submit" value="Create">
             </form>
         </div>
         <div id="modal-about" class="modal">
@@ -64,7 +62,7 @@
                     <input type="checkbox" id="modify-user-homescreen" checked>
                     <span>Apply homescreen layout</span>
                 </label>
-                <input type="submit" class="button ~positive !normal full-width center supra submit" value="Apply">
+                <input type="submit" class="button ~urge !normal full-width center supra submit" value="Apply">
             </form>
         </div>
         <div id="modal-delete-user" class="modal">
@@ -76,7 +74,7 @@
                         <span>Send notification email</span>
                     </label>
                     <textarea id="textarea-delete-user" class="textarea full-width ~neutral !normal mb-1" placeholder="Your account has been deleted."></textarea>
-                    <input type="submit" class="button ~positive !normal full-width center supra submit" value="Apply">
+                    <input type="submit" class="button ~urge !normal full-width center supra submit" value="Apply">
                 </div>
             </form>
         </div>
@@ -91,7 +89,7 @@
             </div>
         </div>
         <div id="modal-refresh" class="modal">
-            <div class="modal-content card ~positive !normal">
+            <div class="modal-content card ~urge !normal">
                 <span class="heading">Settings applied.</span>
                 <p class="content">Refresh the page in a few seconds.</p>
             </div>
@@ -106,28 +104,28 @@
                         <option>Other person</option>
                     </select>
                 </div>
-                <input type="submit" class="button ~positive !normal full-width center supra submit" value="Submit">
+                <input type="submit" class="button ~urge !normal full-width center supra submit" value="Submit">
             </form>
         </div>
         <div class="pageContainer max-w-screen-lg px-6 py-4 mx-auto lg:mx-auto md:py-8">
-            <div class="relative mb-1">
+            <div class="mb-1">
                 <header class="flex flex-wrap items-center justify-between">
                     <div class="text-neutral-700">
-                        <span id="invitesTab-button" class="tabText portal ~positive active">Invites</span>
+                        <span id="invitesTab-button" class="tabText portal ~urge active">Invites</span>
                         <span id="accountsTab-button" class="tabText portal">Accounts</span>
                         <span id="settingsTab-button" class="tabText portal">Settings</span>
                     </div>
                 </header>
             </div>
-            <div class="relative mb-1">
+            <div class="mb-1">
                 <div class="text-neutral-700">
                     <span class="button ~critical !normal mb-1">Logout</span>
-                    <span class="button ~neutral !normal mb-1">Theme</span>
+                    <span id="button-theme" class="button ~neutral !normal mb-1">Theme</span>
                     <span id="modalButton" class="button ~neutral !normal mb-1">Trigger Login</span>
                 </div>
             </div>
             <div id="invitesTab">
-                <div class="card ~neutral !high invites mb-1">
+                <div class="card ~neutral !low invites mb-1">
                     <span class="heading">Invites</span>
                     <div class="inv">
                         <div class="card ~neutral !normal inv-header mt-half">
@@ -190,10 +188,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="card ~neutral !high create-inv">
+                <div class="card ~neutral !low create-inv">
                     <span class="heading">Create</span>
                     <div class="row">
-                        <div class="card ~neutral !low col">
+                        <div class="card ~neutral !normal col">
                             <label class="label supra" for="inv-days">Days</label>
                             <div class="select ~neutral !normal mb-1">
                                 <select id="inv-days">
@@ -213,7 +211,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="card ~neutral !low col">
+                        <div class="card ~neutral !normal col">
                             <label class="label supra" for="inv-uses">Number of uses</label>
                             <div class="button-input mb-1">
                                 <input type="number" min="0" id="inv-uses" class="input ~neutral !normal mr-1" value=1>
@@ -232,22 +230,22 @@
                             </div>
                             <label class="label supra">Send to</label>
                             <div class="button-input mb-1">
-                                <input type="text" id="inv-email" class="input ~neutral !normal mr-1" placeholder="example@example.com">
+                                <input type="email" id="inv-email" class="input ~neutral !normal mr-1" placeholder="example@example.com">
                                 <label for="inv-email-enabled" class="button ~neutral !normal">
                                     <input type="checkbox" id="inv-email-enabled" aria-label="Send to address enabled">
                                 </label>
                             </div>
-                            <span class="button ~positive !normal supra full-width center button-lg">Create</span>
+                            <span class="button ~urge !normal supra full-width center button-lg">Create</span>
                         </div>
                     </div>
                 </div>
             </div>
             <div id="accountsTab" class="unfocused">
-                <div class="card ~neutral !high accounts mb-1">
+                <div class="card ~neutral !low accounts mb-1">
                     <span class="heading">Accounts</span>
                     <div class="fr">
                         <span class="button ~neutral !normal" id="accounts-add-user">Add User</span>
-                        <span class="button ~positive !normal" id="accounts-modify-user">Modify Settings</span>
+                        <span class="button ~urge !normal" id="accounts-modify-user">Modify Settings</span>
                         <span class="button ~critical !normal" id="accounts-delete-user">Delete User</span>
                     </div>
                     <div class="card ~neutral !normal accounts-header mt-half">
@@ -279,7 +277,7 @@
                 </div>
             </div>
             <div id="settingsTab" class="unfocused">
-                <div class="card ~neutral !high settings">
+                <div class="card ~neutral !low settings">
                     <span class="heading">Settings</span>
                     <div class="fr">
                         <span class="button ~neutral !normal" id="accounts-add-user">Save</span>
@@ -287,10 +285,10 @@
                     <div class="row">
                         <div class="card ~neutral !normal col">
                             <aside class="aside small ~info mb-half">Note: <sup class="text-critical">*</sup> indicates a required field, <sup class="text-critical">R</sup> indicates changes require a restart.</aside> 
-                            <span class="button ~neutral !normal settings-section-button mb-half" id="setting-about">About</span>
-                            <span class="button ~neutral !normal settings-section-button mb-half selected">User Profiles</span>
+                            <span class="button ~neutral !low settings-section-button mb-half" id="setting-about">About</span>
+                            <span class="button ~neutral !low settings-section-button mb-half selected">User Profiles</span>
                         </div>
-                        <div class="card ~neutral !low col">
+                        <div class="card ~neutral !normal col">
                             <div class="settings-section">
                                 <p class="support large mb-half">Settings section description.</p>
                                 <div class="setting">
