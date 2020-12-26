@@ -31,12 +31,12 @@ const toggles: HTMLInputElement[] = Array.from(document.getElementsByClassName('
 for (let toggle of toggles) {
     toggle.onclick = () => {
         const el = toggle.parentElement.parentElement.parentElement.nextElementSibling as HTMLDivElement;
-        if (el.classList.contains("visible")) {
-            el.classList.toggle("visible");
-            el.classList.toggle("hidden");
+        if (el.classList.contains("focused")) {
+            el.classList.toggle("focused");
+            el.classList.toggle("unfocused");
         } else {
-            el.classList.toggle("hidden");
-            el.classList.toggle("visible");
+            el.classList.toggle("unfocused");
+            el.classList.toggle("focused");
         }
         toggle.previousElementSibling.classList.toggle("rotated");
         toggle.previousElementSibling.classList.toggle("not-rotated");
@@ -115,8 +115,8 @@ const modifySettingsSource = function () {
     (user.nextElementSibling as HTMLSpanElement).classList.toggle('!high');
     (profile.nextElementSibling as HTMLSpanElement).classList.toggle('!normal');
     (profile.nextElementSibling as HTMLSpanElement).classList.toggle('!high');
-    profileSelect.classList.toggle('hidden');
-    userSelect.classList.toggle('hidden');
+    profileSelect.classList.toggle('unfocused');
+    userSelect.classList.toggle('unfocused');
 }
 
 const radioUseProfile = document.getElementById('radio-use-profile') as HTMLInputElement;
@@ -128,9 +128,9 @@ radioUseUser.checked = false;
 
 const checkDeleteUserNotify = function () {
     if ((document.getElementById('delete-user-notify') as HTMLInputElement).checked) {
-        document.getElementById('textarea-delete-user').classList.remove('hidden');
+        document.getElementById('textarea-delete-user').classList.remove('unfocused');
     } else {
-        document.getElementById('textarea-delete-user').classList.add('hidden');
+        document.getElementById('textarea-delete-user').classList.add('unfocused');
     }
 };
 

@@ -36,12 +36,12 @@
                 <span class="heading"><span id="header-modify-user">Modify Settings</span> <span class="modal-close">&times;</span></span>
                 <p class="content">Apply settings from an existing profile, or source them directly from a user.</p>
                 <div class="flex-row mb-1">
-                    <label class="fw-group mr-1">
-                        <input type="radio" name="modify-user-source" class="hidden" id="radio-use-profile" checked>
+                    <label class="flex-row-group mr-1">
+                        <input type="radio" name="modify-user-source" class="unfocused" id="radio-use-profile" checked>
                         <span class="button ~neutral !high supra full-width center">Profile</span>
                     </label>
-                    <label class="fw-group ml-1">
-                        <input type="radio" name="modify-user-source" class="hidden" id="radio-use-user">
+                    <label class="flex-row-group ml-1">
+                        <input type="radio" name="modify-user-source" class="unfocused" id="radio-use-user">
                         <span class="button ~neutral !normal supra full-width center">User</span>
                     </label>
                 </div>
@@ -52,7 +52,7 @@
                         <option>Default</option>
                     </select>
                 </div>
-                <div id="modify-user-users" class="select ~neutral !normal mb-1 hidden">
+                <div id="modify-user-users" class="select ~neutral !normal mb-1 unfocused">
                     <select>
                         <option>Person</option>
                         <option>Other person</option>
@@ -107,13 +107,13 @@
                 <input type="submit" class="button ~urge !normal full-width center supra submit" value="Submit">
             </form>
         </div>
-        <div class="pageContainer max-w-screen-lg px-6 py-4 mx-auto lg:mx-auto md:py-8">
+        <div class="page-container max-w-screen-lg px-6 py-4 mx-auto lg:mx-auto md:py-8">
             <div class="mb-1">
                 <header class="flex flex-wrap items-center justify-between">
                     <div class="text-neutral-700">
-                        <span id="invitesTab-button" class="tabText portal ~urge active">Invites</span>
-                        <span id="accountsTab-button" class="tabText portal">Accounts</span>
-                        <span id="settingsTab-button" class="tabText portal">Settings</span>
+                        <span id="invitesTab-button" class="tab-button portal ~urge active">Invites</span>
+                        <span id="accountsTab-button" class="tab-button portal">Accounts</span>
+                        <span id="settingsTab-button" class="tab-button portal">Settings</span>
                     </div>
                 </header>
             </div>
@@ -128,7 +128,7 @@
                 <div class="card ~neutral !low invites mb-1">
                     <span class="heading">Invites</span>
                     <div class="inv">
-                        <div class="card ~neutral !normal inv-header mt-half">
+                        <div class="card ~neutral !normal inv-header flex-expand mt-half">
                             <div class="inv-codearea">
                                 <a href="#" class="code monospace mr-1">ZD8ZeC55Jcpmbtv54FuVM3</a>
                                 <span class="button ~info !normal">Copy</span>
@@ -138,15 +138,15 @@
                                 <span class="button ~critical !normal">Delete</span>
                                 <label>
                                     <i class="icon icon-arrow-down not-rotated"></i>
-                                    <input type="checkbox" class="toggle-details">
+                                    <input type="checkbox" class="toggle-details unfocused">
                                 </label>
                             </div>
                         </div>
-                        <div class="card ~neutral !normal mt-half inv-details mt-half hidden">
-                            <div class="inv-row">
+                        <div class="card ~neutral !normal mt-half inv-details mt-half unfocused">
+                            <div class="inv-row flex-expand align-top">
                                 <div class="inv-profilearea">
                                     <p class="supra mb-1">Profile</p>
-                                    <div class="select ~neutral !normal inv-profileselect ib">
+                                    <div class="select ~neutral !normal inv-profileselect inline-block">
                                         <select>
                                             <option>Friends</option>
                                             <option>Family</option>
@@ -213,7 +213,7 @@
                         </div>
                         <div class="card ~neutral !normal col">
                             <label class="label supra" for="inv-uses">Number of uses</label>
-                            <div class="button-input mb-1">
+                            <div class="flex-expand mb-1">
                                 <input type="number" min="0" id="inv-uses" class="input ~neutral !normal mr-1" value=1>
                                 <label for="inv-inf-uses" class="button ~neutral !normal">
                                     <span>∞</span>
@@ -229,7 +229,7 @@
                                 </select>
                             </div>
                             <label class="label supra">Send to</label>
-                            <div class="button-input mb-1">
+                            <div class="flex-expand mb-1">
                                 <input type="email" id="inv-email" class="input ~neutral !normal mr-1" placeholder="example@example.com">
                                 <label for="inv-email-enabled" class="button ~neutral !normal">
                                     <input type="checkbox" id="inv-email-enabled" aria-label="Send to address enabled">
@@ -284,15 +284,15 @@
                     </div>
                     <div class="row">
                         <div class="card ~neutral !normal col">
-                            <aside class="aside small ~info mb-half">Note: <sup class="text-critical">*</sup> indicates a required field, <sup class="text-critical">R</sup> indicates changes require a restart.</aside> 
+                            <aside class="aside sm ~info mb-half">Note: <sup class="~critical">*</sup> indicates a required field, <sup class="~critical">R</sup> indicates changes require a restart.</aside> 
                             <span class="button ~neutral !low settings-section-button mb-half" id="setting-about">About</span>
                             <span class="button ~neutral !low settings-section-button mb-half selected">User Profiles</span>
                         </div>
                         <div class="card ~neutral !normal col">
                             <div class="settings-section">
-                                <p class="support large mb-half">Settings section description.</p>
+                                <p class="support lg mb-half">Settings section description.</p>
                                 <div class="setting">
-                                    <label class="label" for="settings-select">Select <sup class="text-critical">R</sup></label>
+                                    <label class="label" for="settings-select">Select <sup class="~critical">R</sup></label>
                                     <div class="select ~neutral !normal mt-half">
                                         <select id="settings-select">
                                             <option>Option 1</option>
@@ -300,13 +300,13 @@
                                     </div>
                                 </div>
                                 <div class="setting">
-                                    <label class="label" for="settings-input">Input <sup class="text-critical">*</sup></label>
+                                    <label class="label" for="settings-input">Input <sup class="~critical">*</sup></label>
                                     <input type="text" class="input ~neutral !normal mt-half" placeholder="Value">
                                 </div>
                                 <div class="setting">
                                     <label class="switch settings">
                                         <input type="checkbox" id="settings-check">
-                                        <span>Checkbox <sup class="text-critical">R</sup></span>
+                                        <span>Checkbox <sup class="~critical">R</sup></span>
                                     </label>
                                 </div>
                             </div>
