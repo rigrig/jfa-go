@@ -1,7 +1,14 @@
 @import "node_modules/a17t/dist/a17t.css";
-@import "node_modules/icons.css/dist/icons.css";
+@import "node_modules/remixicon/fonts/remixicon.css";
 @import "modal.css";
 @import "dark.css";
+
+:root {
+    --border-width-default: 2px;
+    --border-width-2: 3px;
+    --border-width-4: 5px;
+    --border-width-8: 8px;
+}
 
 .light-theme {
     --settings-section-button-filter: 90%;
@@ -119,7 +126,7 @@
     background-color: inherit; /* so we can use a17t code blocks */
 }
 
-sup.\~critical {
+sup.\~critical, .text-critical {
     color: var(--color-critical-normal-content);
 }
 
@@ -252,8 +259,13 @@ sup.\~critical {
 
 select {
     color: inherit;
+    border: 0 solid var(--color-neutral-300);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 input {
     color: inherit;
+    border: 0 solid var(--color-neutral-300);
 }

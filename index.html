@@ -25,7 +25,7 @@
             <div class="modal-content content card">
                 <span class="heading">About <span class="modal-close">&times;</span></span>
                 <img src="images/banner.svg" class="mt-1" alt="jfa-go banner">
-                <p><a href="https://github.com/hrfee/jfa-go/tree/a17t-redesign">Github (ICON)</a></p>
+                <p><i class="icon ri-github-fill"></i><a href="https://github.com/hrfee/jfa-go">jfa-go</a></p>
                 <p>Version <span class="code monospace">a17t-redesign</span></p>
                 <p>Commit <span class="code monospace">cb28097</span></p>
                 <p><a href="https://github.com/hrfee/jfa-go/blob/main/LICENSE">Available under the MIT License.</a></p>
@@ -137,7 +137,7 @@
                                 <span class="inv-expiry mr-1">Expires in 30m</span>
                                 <span class="button ~critical !normal">Delete</span>
                                 <label>
-                                    <i class="icon icon-arrow-down not-rotated"></i>
+                                    <i class="icon ri-arrow-down-s-line not-rotated"></i>
                                     <input type="checkbox" class="toggle-details unfocused">
                                 </label>
                             </div>
@@ -220,6 +220,7 @@
                                     <input type="checkbox" class="unfocused" id="inv-inf-uses" aria-label="Set uses to infinite">
                                 </label>
                             </div>
+                            <p class="support unfocused"><span class="badge ~critical">Warning</span> invites with infinite uses can be used abusively.</p>
                             <label class="label supra">Profile</label>
                             <div class="select ~neutral !normal mb-1" id="inv-profile">
                                 <select>
@@ -262,13 +263,13 @@
                                 <tr>
                                     <td><input type="checkbox" value=""></td>
                                     <td>Person <span class="chip ~info ml-1">Admin</span></td>
-                                    <td><i class="icon icon-edit"></i><input type="email" class="input ~neutral !normal stealth-input stealth-input-hidden" value="email@addr.ess" readonly></td>
+                                    <td><i class="icon ri-edit-line"></i><input type="email" class="input ~neutral !normal stealth-input stealth-input-hidden" value="email@addr.ess" readonly></td>
                                     <td>13/12/20 00:39</td>
                                 </tr>
                                 <tr>
                                     <td><input type="checkbox" value=""></td>
                                     <td>Other person</td>
-                                    <td><i class="icon icon-edit"></i><input type="email" class="input ~neutral !normal stealth-input stealth-input-hidden" value="eee@ma.il" readonly></td>
+                                    <td><i class="icon ri-edit-line"></i><input type="email" class="input ~neutral !normal stealth-input stealth-input-hidden" value="eee@ma.il" readonly></td>
                                     <td>12/12/20 17:46</td>
                                 </tr>
                             </tbody>
@@ -284,7 +285,7 @@
                     </div>
                     <div class="row">
                         <div class="card ~neutral !normal col">
-                            <aside class="aside sm ~info mb-half">Note: <sup class="~critical">*</sup> indicates a required field, <sup class="~critical">R</sup> indicates changes require a restart.</aside> 
+                            <aside class="aside sm ~info mb-half">Note: <span class="badge ~critical">*</span> indicates a required field, <span class="badge ~critical">R</span> indicates changes require a restart.</aside> 
                             <span class="button ~neutral !low settings-section-button mb-half" id="setting-about">About</span>
                             <span class="button ~neutral !low settings-section-button mb-half selected">User Profiles</span>
                         </div>
@@ -292,7 +293,7 @@
                             <div class="settings-section">
                                 <p class="support lg mb-half">Settings section description.</p>
                                 <div class="setting">
-                                    <label class="label" for="settings-select">Select <sup class="~critical">R</sup></label>
+                                    <label class="label" for="settings-select">Select <span class="badge ~critical">R</span></label>
                                     <div class="select ~neutral !normal mt-half">
                                         <select id="settings-select">
                                             <option>Option 1</option>
@@ -300,13 +301,13 @@
                                     </div>
                                 </div>
                                 <div class="setting">
-                                    <label class="label" for="settings-input">Input <sup class="~critical">*</sup></label>
+                                    <label class="label" for="settings-input">Input <span class="badge ~critical">*</span></label>
                                     <input type="text" class="input ~neutral !normal mt-half" placeholder="Value">
                                 </div>
                                 <div class="setting">
                                     <label class="switch settings">
                                         <input type="checkbox" id="settings-check">
-                                        <span>Checkbox <sup class="~critical">R</sup></span>
+                                        <span>Checkbox <span class="badge ~critical">R</span></span>
                                     </label>
                                 </div>
                             </div>

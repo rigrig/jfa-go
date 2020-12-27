@@ -1,14 +1,21 @@
 This branch is for experimenting with [a17t](https://a17t.miles.land/) to possibly replace bootstrap in the future. Currently just working on the page structures, so none of this is actually usable in jfa-go yet.
 
 #### todo
-* [x] invites tab mockup (partially complete)
-* [x] accounts tab mockup
-* [x] settings tab mockup
+**general**
 * [x] modal implementation
-* [x] modals
 * [x] animations
-* [x] JS to TS, utilities
-* [ ] Integration with existing code
+* [x] utilities
+* [x] CSS for light & dark
+
+**admin**
+* [x] invites tab
+* [x] accounts tab
+* [x] settings tab
+* [x] modals
+* [ ] integration with existing code
+
+**invites**
+* [ ] everything
 
 #### screenshots
 ##### dark

@@ -47,18 +47,21 @@ const checkInfUses = function (check: HTMLInputElement, mode = 2) {
     const uses = document.getElementById('inv-uses') as HTMLInputElement;
     if (mode == 2) {
         uses.disabled = check.checked;
-        check.parentElement.classList.toggle('!normal');
-        check.parentElement.classList.toggle('!high');
+        check.parentElement.classList.toggle('~neutral');
+        check.parentElement.classList.toggle('~urge');
+        check.parentElement.parentElement.nextElementSibling.classList.toggle('unfocused');
     } else if (mode == 1) {
         uses.disabled = true;
         check.checked = true;
-        check.parentElement.classList.remove('!normal');
-        check.parentElement.classList.add('!high');
+        check.parentElement.classList.remove('~neutral');
+        check.parentElement.classList.add('~urge');
+        check.parentElement.parentElement.nextElementSibling.classList.remove('unfocused');
     } else {
         uses.disabled = false;
         check.checked = false;
-        check.parentElement.classList.remove('!high');
-        check.parentElement.classList.add('!normal');
+        check.parentElement.classList.remove('~urge');
+        check.parentElement.classList.add('~neutral');
+        check.parentElement.parentElement.nextElementSibling.classList.add('unfocused');
     }
 };
 
@@ -69,18 +72,18 @@ const checkEmailEnabled = function (check: HTMLInputElement, mode = 2) {
     const input = document.getElementById('inv-email') as HTMLInputElement;
     if (mode == 2) {
         input.disabled = !check.checked;
-        check.parentElement.classList.toggle('!normal');
-        check.parentElement.classList.toggle('!high');
+        check.parentElement.classList.toggle('~neutral');
+        check.parentElement.classList.toggle('~urge');
     } else if (mode == 1) {
         input.disabled = false;
         check.checked = true;
-        check.parentElement.classList.remove('!normal');
-        check.parentElement.classList.add('!high');
+        check.parentElement.classList.remove('~neutral');
+        check.parentElement.classList.add('~urge');
     } else {
         input.disabled = true;
         check.checked = false;
-        check.parentElement.classList.remove('!high');
-        check.parentElement.classList.add('!normal');
+        check.parentElement.classList.remove('~urge');
+        check.parentElement.classList.add('~neutral');
     }
 };
 let invEmailEnabled = document.getElementById('inv-email-enabled') as HTMLInputElement;
@@ -95,11 +98,23 @@ const loadAccounts = function () {
         const row = rows[i];
         const editButton = row.querySelector(".icon") as HTMLElement;
         const emailInput = row.querySelector(".input") as HTMLInputElement;
+        const outerClickListener = (event: Event) => {
+            if (!(event.target instanceof HTMLElement && (emailInput.contains(event.target) || editButton.contains(event.target)))) {
+                emailInput.classList.toggle('stealth-input-hidden');
+                emailInput.readOnly = !emailInput.readOnly;
+                editButton.classList.toggle('ri-edit-line');
+                editButton.classList.toggle('ri-check-line');
+                document.removeEventListener('click', outerClickListener);
+            }
+        };
         editButton.onclick = function () {
             emailInput.classList.toggle('stealth-input-hidden');
             emailInput.readOnly = !emailInput.readOnly;
-            editButton.classList.toggle('icon-edit');
-            editButton.classList.toggle('icon-check');
+            editButton.classList.toggle('ri-edit-line');
+            editButton.classList.toggle('ri-check-line');
+            if (editButton.classList.contains('ri-check-line')) {
+                document.addEventListener('click', outerClickListener);
+            }
         };
     }
 };
@@ -180,4 +195,3 @@ const modalRefresh = new Modal(document.getElementById('modal-refresh'));
 
 const modalOmbiDefaults = new Modal(document.getElementById('modal-ombi-defaults'));
 document.getElementById('form-ombi-defaults').addEventListener('submit', modalOmbiDefaults.close);
-
