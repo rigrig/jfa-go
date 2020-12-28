@@ -1,13 +1,7 @@
+import  { toggleTheme, loadTheme } from "./modules/theme.js";
 import { Modal } from "./modules/modal.js";
 
-function toggleTheme() {
-    document.documentElement.classList.toggle('dark-theme');
-    document.documentElement.classList.toggle('light-theme');
-    localStorage.setItem('theme', document.documentElement.classList.contains('dark-theme') ? "dark" : "light");
-}
-
-if (localStorage.getItem('theme') == "dark") { document.documentElement.classList.add('dark-theme'); document.documentElement.classList.remove('light-theme'); }
-
+loadTheme();
 (document.getElementById('button-theme') as HTMLSpanElement).onclick = toggleTheme;
 
 const whichAnimationEvent = () => {
@@ -77,6 +71,7 @@ const checkEmailEnabled = function (check: HTMLInputElement, mode = 2) {
         check.parentElement.classList.add('~neutral');
     }
 };
+
 let invEmailEnabled = document.getElementById('inv-email-enabled') as HTMLInputElement;
 invEmailEnabled.onchange = () => { checkEmailEnabled(invEmailEnabled, 2); };
 

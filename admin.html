@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="light-theme">
     <head>
-        <link rel="stylesheet" type="text/css" href="base.css">
+        <link rel="stylesheet" type="text/css" href="css/base.css">
         <title>jfa-no</title>
     </head>
     <body class="max-w-full overflow-x-hidden section">
@@ -348,7 +348,13 @@
                                     </div>
                                 </div>
                                 <div class="setting">
-                                    <label class="label" for="settings-input">Input <span class="badge ~critical">*</span></label>
+                                    <label class="label" for="settings-input">
+                                        Input <span class="badge ~critical">*</span>
+                                        <div class="tooltip">
+                                            <i class="icon ri-information-line"></i>
+                                            <span class="content sm">An example tooltip.</span>
+                                        </div>
+                                    </label>
                                     <input type="text" class="input ~neutral !normal mt-half" placeholder="Value">
                                 </div>
                                 <div class="setting">
@@ -363,6 +369,6 @@
                 </div>
             </div>
         </div>
-        <script src="js/main.js" type="module"></script>
+        <script src="js/admin.js" type="module"></script>
     </body>
 </html>

@@ -24,6 +24,4 @@ version.go
 notes
 docs/*
 !docs/go.mod
-
-main.js*
-modal.js*
+js/
