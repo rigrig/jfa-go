@@ -145,7 +145,7 @@
                         <div class="card ~neutral !normal mt-half inv-details mt-half unfocused">
                             <div class="inv-row flex-expand align-top">
                                 <div class="inv-profilearea">
-                                    <p class="supra mb-1">Profile</p>
+                                    <p class="supra mb-1 top">Profile</p>
                                     <div class="select ~neutral !normal inv-profileselect inline-block">
                                         <select>
                                             <option>Friends</option>
@@ -164,10 +164,10 @@
                                     </label>
                                 </div>
                                 <div class="block">
-                                    <p class="supra mb-1">Created <strong class="inv-created">10/12/20 18:46</strong></p>
+                                    <p class="supra mb-1 top">Created <strong class="inv-created">10/12/20 18:46</strong></p>
                                     <p class="supra mb-1">Remaining uses <strong class="inv-remaining">8</strong></p>
                                 </div>
-                                <div class="card ~neutral !low">
+                                <div class="card ~neutral !low inv-created-users">
                                     <strong class="supra table-header">Created users</strong>
                                     <table class="table inv-table">
                                         <thead>
@@ -187,25 +187,72 @@
                             </div>
                         </div>
                     </div>
+                    <div class="inv">
+                        <div class="card ~neutral !normal inv-header flex-expand mt-half">
+                            <div class="inv-codearea">
+                                <a href="#" class="code monospace mr-1">ZD8ZeC55Jcpmbtv54FuVM3</a>
+                                <span class="button ~info !normal">Copy</span>
+                            </div>
+                            <div class="inv-infoarea">
+                                <span class="inv-expiry mr-1">Expires in 30m</span>
+                                <span class="button ~critical !normal">Delete</span>
+                                <label>
+                                    <i class="icon ri-arrow-down-s-line not-rotated"></i>
+                                    <input type="checkbox" class="toggle-details unfocused">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="card ~neutral !normal mt-half inv-details mt-half unfocused">
+                            <div class="inv-row flex-expand align-top">
+                                <div class="inv-profilearea">
+                                    <p class="supra mb-1 top">Profile</p>
+                                    <div class="select ~neutral !normal inv-profileselect inline-block">
+                                        <select>
+                                            <option>Friends</option>
+                                            <option>Family</option>
+                                            <option>No Profile</option>
+                                        </select>
+                                    </div>
+                                    <p class="label supra">Notify on:</p>
+                                    <label class="switch block">
+                                        <input type="checkbox" class="inv-notify-expiry">
+                                        <span>On expiry</span>
+                                    </label>
+                                    <label class="switch block">
+                                        <input type="checkbox" class="inv-notify-creation">
+                                        <span>On user creation</span>
+                                    </label>
+                                </div>
+                                <div class="block">
+                                    <p class="supra mb-1 top">Created <strong class="inv-created">10/12/20 18:46</strong></p>
+                                    <p class="supra mb-1">Remaining uses <strong class="inv-remaining">8</strong></p>
+                                </div>
+                                <div class="card ~neutral !low inv-created-users empty">
+                                    <strong class="supra table-header">Created users</strong>
+                                    <p class="content">None yet!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="card ~neutral !low create-inv">
                     <span class="heading">Create</span>
                     <div class="row">
                         <div class="card ~neutral !normal col">
                             <label class="label supra" for="inv-days">Days</label>
-                            <div class="select ~neutral !normal mb-1">
+                            <div class="select ~neutral !normal mb-1 mt-half">
                                 <select id="inv-days">
                                     <option>0</option>
                                 </select>
                             </div>
                             <label class="label supra" for="inv-hours">Hours</label>
-                            <div class="select ~neutral !normal mb-1">
+                            <div class="select ~neutral !normal mb-1 mt-half">
                                 <select id="inv-hours">
                                     <option>0</option>
                                 </select>
                             </div>
                             <label class="label supra" for="inv-minutes">Minutes</label>
-                            <div class="select ~neutral !normal mb-1">
+                            <div class="select ~neutral !normal mb-1 mt-half">
                                 <select id="inv-minutes">
                                     <option>0</option>
                                 </select>
@@ -213,7 +260,7 @@
                         </div>
                         <div class="card ~neutral !normal col">
                             <label class="label supra" for="inv-uses">Number of uses</label>
-                            <div class="flex-expand mb-1">
+                            <div class="flex-expand mb-1 mt-half">
                                 <input type="number" min="0" id="inv-uses" class="input ~neutral !normal mr-1" value=1>
                                 <label for="inv-inf-uses" class="button ~neutral !normal">
                                     <span>∞</span>
@@ -222,7 +269,7 @@
                             </div>
                             <p class="support unfocused"><span class="badge ~critical">Warning</span> invites with infinite uses can be used abusively.</p>
                             <label class="label supra">Profile</label>
-                            <div class="select ~neutral !normal mb-1" id="inv-profile">
+                            <div class="select ~neutral !normal mb-1 mt-half" id="inv-profile">
                                 <select>
                                     <option>Friends</option>
                                     <option>Family</option>
@@ -230,13 +277,13 @@
                                 </select>
                             </div>
                             <label class="label supra">Send to</label>
-                            <div class="flex-expand mb-1">
+                            <div class="flex-expand mb-1 mt-half">
                                 <input type="email" id="inv-email" class="input ~neutral !normal mr-1" placeholder="example@example.com">
                                 <label for="inv-email-enabled" class="button ~neutral !normal">
                                     <input type="checkbox" id="inv-email-enabled" aria-label="Send to address enabled">
                                 </label>
                             </div>
-                            <span class="button ~urge !normal supra full-width center button-lg">Create</span>
+                            <span class="button ~urge !normal supra full-width center lg">Create</span>
                         </div>
                     </div>
                 </div>
@@ -316,7 +363,6 @@
                 </div>
             </div>
         </div>
-        <script src="modal.js"></script>
-        <script src="main.js"></script>
+        <script src="js/main.js" type="module"></script>
     </body>
 </html>

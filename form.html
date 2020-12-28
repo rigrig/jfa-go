@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" class="light-theme">
+    <head>
+        <link rel="stylesheet" type="text/css" href="base.css">
+        <title>create an account - jfa-no</title>
+    </head>
+    <body class="max-w-full overflow-x-hidden section">
+        <div id="modal-success" class="modal">
+            <div class="modal-content card">
+                <span class="heading mb-1">{{ .lang.successHeader }}</span>
+                <p class="content mb-1">{{ .successMessage }}</p>
+                <span class="button ~urge !normal full-width center supra submit" id="create-success-button">{{ .lang.successContinueButton }}</span>
+            </div>
+        </div>
+        <div class="page-container">
+            <div class="card ~neutral !low">
+                <div class="row baseline">
+                    <span class="col heading">{{ .lang.createAccountHeader }}</span>
+                    <span class="col subheading"> {{ .helpMessage }}</span>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <form class="card ~neutral !normal" href="">
+                            <label class="label supra" for="create-username">{{ .lang.username }}</label>
+                            <input type="text" class="input ~neutral !high mt-half mb-1" placeholder="{{ .lang.username }}" id="create-username" aria-label="{{ .lang.username }}">
+                            
+                            <label class="label supra" for="create-email">{{ .lang.emailAddress }}</label>
+                            <input type="email" class="input ~neutral 1high mt-half mb-1" placeholder="{{ .lang.emailAddress }}" id="create-email" aria-label="{{ .lang.emailAddress }}">
+                            
+                            <label class="label supra" for="create-password">{{ .lang.password }}</label>
+                            <input type="password" class="input ~neutral 1high mt-half mb-1" placeholder="{{ .lang.password }}" id="create-password" aria-label="{{ .lang.password }}">
+                            
+                            <input type="submit" class="button ~urge !normal full-width center supra submit" value="{{ .lang.createAccountButton }}">
+                        </form>
+                    </div>
+                    <div class="col">
+                        <div class="card ~neutral !normal">
+                            <span class="label supra" for="inv-uses">{{ .lang.passwordRequirementsHeader }}</span>
+                            <ul>
+                                <li class="content" id="{{ $key }}" min="${{ $value }}">
+                                    {{ requirement }} <span class="badge lg ~positive"><i class="icon ri-check-line"></i></span>
+                                </li>
+                                <li class="content" id="{{ $key }}" min="${{ $value }}">
+                                    {{ requirement }} <span class="badge lg ~critical"><i class="icon ri-close-line"></i></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <aside class="col aside sm ~info">{{ .contactMessage }}</aside>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="modal.js"></script>
+    </body>
+</html>
+

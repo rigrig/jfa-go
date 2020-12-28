@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "ts": "nodemon -e ts --watch ts --exec 'sh -c \"esbuild ts/*.ts --sourcemap --outdir=./\"'",
+    "ts": "nodemon -e ts --watch ts --exec 'sh -c \"esbuild ts/*.ts ts/modules/*.ts --sourcemap --outdir=./js/\"'",
     "serve": "npx live-server --ignore=\"ts/**,node_modules/**\"",
     "serve-ts": "concurrently --kill-others \"npm run serve\" \"npm run ts\""
   },

@@ -104,6 +104,10 @@
     flex-wrap: wrap;
 }
 
+.row.baseline {
+    align-items: baseline;
+}
+
 .col {
     flex: 1;
     margin: 0.5rem;
@@ -139,9 +143,17 @@ sup.\~critical, .text-critical {
     font-size: 1rem;
 }
 
-.table-header {
+.badge.lg {
+    font-size: 1rem;
+}
+
+.inv-created-users strong,p {
     padding-left: 0.5rem;
     padding-bottom: 0.2rem;
+}
+
+.inv-created-users.empty strong,p {
+    padding: 0;
 }
 
 .inv {
@@ -160,8 +172,8 @@ sup.\~critical, .text-critical {
     box-sizing: border-box; /* fixes weird length issue with inputs */
 }
 
-.button-lg {
-    height: 3rem;
+.button.lg {
+    height: 2.5rem;
 }
 
 .submit {
@@ -269,3 +281,9 @@ input {
     color: inherit;
     border: 0 solid var(--color-neutral-300);
 }
+
+p.top {
+    margin-top: 0px;
+}
+
+

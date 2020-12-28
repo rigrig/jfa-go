@@ -1,9 +1,9 @@
 declare var window: Window;
 
-class Modal {
-    modal: HTMLDivElement;
+export class Modal implements Modal {
+    modal: HTMLElement;
     closeButton: HTMLSpanElement;
-    constructor(modal: HTMLDivElement, important: boolean = false) {
+    constructor(modal: HTMLElement, important: boolean = false) {
         this.modal = modal;
         const closeButton = this.modal.querySelector('span.modal-close')
         if (closeButton !== null) {

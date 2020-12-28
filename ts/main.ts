@@ -1,13 +1,4 @@
-interface Window {
-    transitionEvent: string;
-    animationEvent: string;
-}
-
-interface ArrayConstructor {
-    from(arrayLike: any, mapFn?, thisArg?): Array<any>;
-}
-
-declare var window: Window;
+import { Modal } from "./modules/modal.js";
 
 function toggleTheme() {
     document.documentElement.classList.toggle('dark-theme');
@@ -170,28 +161,30 @@ for (let tab of tabs) {
     }
 }
 
-const modalLogin = new Modal(document.getElementById('modal-login'), true);
-document.getElementById('form-login').addEventListener('submit', modalLogin.close);
-document.getElementById('modalButton').onclick = modalLogin.toggle;
+window.modals = {} as Modals;
 
-const modalAddUser = new Modal(document.getElementById('modal-add-user'));
-(document.getElementById('accounts-add-user') as HTMLSpanElement).onclick = modalAddUser.toggle;
-document.getElementById('form-add-user').addEventListener('submit', modalAddUser.close);
+window.modals.login = new Modal(document.getElementById('modal-login'), true);
+document.getElementById('form-login').addEventListener('submit', window.modals.login.close);
+document.getElementById('modalButton').onclick = window.modals.login.toggle;
 
-const modalAbout = new Modal(document.getElementById('modal-about'));
-(document.getElementById('setting-about') as HTMLSpanElement).onclick = modalAbout.toggle;
+window.modals.addUser = new Modal(document.getElementById('modal-add-user'));
+(document.getElementById('accounts-add-user') as HTMLSpanElement).onclick = window.modals.addUser.toggle;
+document.getElementById('form-add-user').addEventListener('submit', window.modals.addUser.close);
 
-const modalModifyUser = new Modal(document.getElementById('modal-modify-user'));
-document.getElementById('form-modify-user').addEventListener('submit', modalModifyUser.close);
-(document.getElementById('accounts-modify-user') as HTMLSpanElement).onclick = modalModifyUser.toggle;
+window.modals.about = new Modal(document.getElementById('modal-about'));
+(document.getElementById('setting-about') as HTMLSpanElement).onclick = window.modals.about.toggle;
 
-const modalDeleteUser = new Modal(document.getElementById('modal-delete-user'));
-document.getElementById('form-delete-user').addEventListener('submit', modalDeleteUser.close);
-(document.getElementById('accounts-delete-user') as HTMLSpanElement).onclick = modalDeleteUser.toggle;
+window.modals.modifyUser = new Modal(document.getElementById('modal-modify-user'));
+document.getElementById('form-modify-user').addEventListener('submit', window.modals.modifyUser.close);
+(document.getElementById('accounts-modify-user') as HTMLSpanElement).onclick = window.modals.modifyUser.toggle;
 
-const modalRestart = new Modal(document.getElementById('modal-restart'));
+window.modals.deleteUser = new Modal(document.getElementById('modal-delete-user'));
+document.getElementById('form-delete-user').addEventListener('submit', window.modals.deleteUser.close);
+(document.getElementById('accounts-delete-user') as HTMLSpanElement).onclick = window.modals.deleteUser.toggle;
 
-const modalRefresh = new Modal(document.getElementById('modal-refresh'));
+window.modals.settingsRestart = new Modal(document.getElementById('modal-restart'));
 
-const modalOmbiDefaults = new Modal(document.getElementById('modal-ombi-defaults'));
-document.getElementById('form-ombi-defaults').addEventListener('submit', modalOmbiDefaults.close);
+window.modals.settingsRefresh = new Modal(document.getElementById('modal-refresh'));
+
+window.modals.ombiDefaults = new Modal(document.getElementById('modal-ombi-defaults'));
+document.getElementById('form-ombi-defaults').addEventListener('submit', window.modals.ombiDefaults.close);
