@@ -2,7 +2,8 @@
 <html lang="en" class="light-theme">
     <head>
         <link rel="stylesheet" type="text/css" href="css/base.css">
-        <title>create an account - jfa-no</title>
+        {{ template "header.html" . }}
+        <title>{{ .lang.pageTitle }}</title>
     </head>
     <body class="max-w-full overflow-x-hidden section">
         <div id="modal-success" class="modal">
@@ -37,12 +38,14 @@
                         <div class="card ~neutral !normal">
                             <span class="label supra" for="inv-uses">{{ .lang.passwordRequirementsHeader }}</span>
                             <ul>
+                                {{ range $key, $value := .requirements }}
                                 <li class="content" id="{{ $key }}" min="${{ $value }}">
-                                    {{ requirement }} <span class="badge lg ~positive"><i class="icon ri-check-line"></i></span>
+                                     <span class="badge lg ~positive"><i class="icon ri-check-line"></i></span>
                                 </li>
                                 <li class="content" id="{{ $key }}" min="${{ $value }}">
-                                    {{ requirement }} <span class="badge lg ~critical"><i class="icon ri-close-line"></i></span>
+                                     <span class="badge lg ~critical"><i class="icon ri-close-line"></i></span>
                                 </li>
+                                {{ end }}
                             </ul>
                         </div>
                         <aside class="col aside sm ~info">{{ .contactMessage }}</aside>
@@ -50,7 +53,10 @@
                 </div>
             </div>
         </div>
-        <script src="modal.js"></script>
+        <script>
+            window.validationStrings = {{ .lang.validationStrings }};
+        </script>
+        {{ template "form-base" . }}
     </body>
 </html>
 

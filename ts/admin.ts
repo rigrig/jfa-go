@@ -1,5 +1,6 @@
 import  { toggleTheme, loadTheme } from "./modules/theme.js";
 import { Modal } from "./modules/modal.js";
+import { Tabs } from "./modules/tabs.js";
 
 loadTheme();
 (document.getElementById('button-theme') as HTMLSpanElement).onclick = toggleTheme;
@@ -78,10 +79,46 @@ invEmailEnabled.onchange = () => { checkEmailEnabled(invEmailEnabled, 2); };
 checkInfUses(invInfUses, 0);
 checkEmailEnabled(invEmailEnabled, 0);
 
+
+
 const loadAccounts = function () {
     const rows: HTMLTableRowElement[] = Array.from(document.getElementById("accounts-list").children);
+    const selectAll = document.getElementById("accounts-select-all") as HTMLInputElement;
+    selectAll.onchange = () => {
+        for (let i = 0; i < rows.length; i++) {
+            (rows[i].querySelector("input[type=checkbox]") as HTMLInputElement).checked = selectAll.checked;
+        }
+    }
+
+    const checkAllChecks = (state: boolean): boolean => {
+        let s = true;
+        for (let i = 0; i < rows.length; i++) {
+            const selectCheck = rows[i].querySelector("input[type=checkbox]") as HTMLInputElement;
+            if (selectCheck.checked != state) {
+                s = false;
+                break;
+            }
+        }
+        return s
+    }
+
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
+        const selectCheck = row.querySelector("input[type=checkbox]") as HTMLInputElement;
+        selectCheck.addEventListener("change", () => {
+            if (checkAllChecks(false)) {
+                selectAll.indeterminate = false;
+                selectAll.checked = false;
+            } else if (checkAllChecks(true)) {
+                selectAll.checked = true;
+                selectAll.indeterminate = false;
+            } else { 
+                selectAll.indeterminate = true;
+                selectAll.checked = false;
+            }
+
+
+        });
         const editButton = row.querySelector(".icon") as HTMLElement;
         const emailInput = row.querySelector(".input") as HTMLInputElement;
         const outerClickListener = (event: Event) => {
@@ -104,8 +141,6 @@ const loadAccounts = function () {
         };
     }
 };
-
-loadAccounts();
 
 const modifySettingsSource = function () {
     const profile = document.getElementById('radio-use-profile') as HTMLInputElement;
@@ -138,48 +173,118 @@ const checkDeleteUserNotify = function () {
 (document.getElementById('delete-user-notify') as HTMLInputElement).onchange = checkDeleteUserNotify;
 checkDeleteUserNotify();
 
-const tabs = ["invitesTab", "accountsTab", "settingsTab"]
-for (let tab of tabs) {
-    (document.getElementById(`${tab}-button`) as HTMLSpanElement).onclick = function () {
-        for (let t of tabs) {
-            const tabEl = document.getElementById(t) as HTMLDivElement;
-            const tabButtonEl = document.getElementById(`${t}-button`) as HTMLSpanElement;
-            if (t == tab) {
-                tabButtonEl.classList.add("active", "~urge");
-                tabEl.classList.remove("unfocused");
-            } else {
-                tabButtonEl.classList.remove("active");
-                tabButtonEl.classList.remove("~urge");
-                tabEl.classList.add("unfocused");
-            }
-        }
-    }
+
+// load tabs
+window.tabs = new Tabs();
+for (let tabID of ["invitesTab", "accountsTab", "settingsTab"]) {
+    window.tabs.addTab(tabID);
+}
+window.tabs.addTab("accountsTab", loadAccounts);
+
+// load modals
+(() => {
+    window.modals = {} as Modals;
+
+    window.modals.login = new Modal(document.getElementById('modal-login'), true);
+    document.getElementById('modalButton').onclick = window.modals.login.toggle;
+
+    window.modals.addUser = new Modal(document.getElementById('modal-add-user'));
+    (document.getElementById('accounts-add-user') as HTMLSpanElement).onclick = window.modals.addUser.toggle;
+    document.getElementById('form-add-user').addEventListener('submit', window.modals.addUser.close);
+
+    window.modals.about = new Modal(document.getElementById('modal-about'));
+    (document.getElementById('setting-about') as HTMLSpanElement).onclick = window.modals.about.toggle;
+
+    window.modals.modifyUser = new Modal(document.getElementById('modal-modify-user'));
+    document.getElementById('form-modify-user').addEventListener('submit', window.modals.modifyUser.close);
+    (document.getElementById('accounts-modify-user') as HTMLSpanElement).onclick = window.modals.modifyUser.toggle;
+
+    window.modals.deleteUser = new Modal(document.getElementById('modal-delete-user'));
+    document.getElementById('form-delete-user').addEventListener('submit', window.modals.deleteUser.close);
+    (document.getElementById('accounts-delete-user') as HTMLSpanElement).onclick = window.modals.deleteUser.toggle;
+
+    window.modals.settingsRestart = new Modal(document.getElementById('modal-restart'));
+
+    window.modals.settingsRefresh = new Modal(document.getElementById('modal-refresh'));
+
+    window.modals.ombiDefaults = new Modal(document.getElementById('modal-ombi-defaults'));
+    document.getElementById('form-ombi-defaults').addEventListener('submit', window.modals.ombiDefaults.close);
+})();
+
+
+function errorMessage(aside: HTMLElement, content: string, timeout: number = 4) {
+    aside.textContent = content;
+    aside.classList.remove("unfocused");
+    setTimeout(() => { aside.classList.add("unfocused"); }, timeout*1000);
 }
 
-window.modals = {} as Modals;
+window.token = "";
 
-window.modals.login = new Modal(document.getElementById('modal-login'), true);
-document.getElementById('form-login').addEventListener('submit', window.modals.login.close);
-document.getElementById('modalButton').onclick = window.modals.login.toggle;
+function login(username: string, password: string) {
+    const req = new XMLHttpRequest();
+    req.responseType = 'json';
+    let url = window.URLBase;
+    const refresh = (username == "" && password == "");
+    if (refresh) {
+        url += "/token/refresh";
+    } else {
+        url += "/token/login";
+    }
+    req.open("GET", url, true);
+    if (!refresh) {
+        req.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
+    }
+    req.onreadystatechange = function (): void {
+        if (this.readyState == 4) {
+            if (this.status != 200) {
+                let errorMsg = "Connection error.";
+                if (this.response) {
+                    errorMsg = this.response["error"];
+                }
+                if (!errorMsg) {
+                    errorMsg = "Unknown error";
+                }
+                if (!refresh) {
+                    errorMessage(window.modals.login.modal.querySelector("aside"), errorMsg, 5);
+                    
+                } else {
+                    window.modals.login.show();
+                }
+            } else {
+                const data = this.response;
+                window.token = data["token"];
+                window.modals.login.close();
+                /*generateInvites();
+                setInterval((): void => generateInvites(), 60 * 1000);
+                addOptions(30, document.getElementById('days') as HTMLSelectElement);
+                addOptions(24, document.getElementById('hours') as HTMLSelectElement);
+                const minutes = document.getElementById('minutes') as HTMLSelectElement;
+                addOptions(59, minutes);
+                minutes.value = "30";
+                checkDuration();
+                if (modal) {
+                    window.Modals.login.hide();
+                }
+                Focus(document.getElementById('logoutButton'));
+            }
+            if (run) {
+                run(+this.status);
+            }*/
+            }
+        }
+    };
+    req.send();
+}
 
-window.modals.addUser = new Modal(document.getElementById('modal-add-user'));
-(document.getElementById('accounts-add-user') as HTMLSpanElement).onclick = window.modals.addUser.toggle;
-document.getElementById('form-add-user').addEventListener('submit', window.modals.addUser.close);
+document.getElementById('form-login').addEventListener('submit', (event: Event) => {
+    event.preventDefault();
+    const username = (document.getElementById("login-user") as HTMLInputElement).value;
+    const password = (document.getElementById("login-password") as HTMLInputElement).value;
+    if (!username || !password) {
+        errorMessage(window.modals.login.modal.querySelector("aside"), "The username and/or password were left blank." , 4);
+        return;
+    }
+    login(username, password, true);
+});
 
-window.modals.about = new Modal(document.getElementById('modal-about'));
-(document.getElementById('setting-about') as HTMLSpanElement).onclick = window.modals.about.toggle;
-
-window.modals.modifyUser = new Modal(document.getElementById('modal-modify-user'));
-document.getElementById('form-modify-user').addEventListener('submit', window.modals.modifyUser.close);
-(document.getElementById('accounts-modify-user') as HTMLSpanElement).onclick = window.modals.modifyUser.toggle;
-
-window.modals.deleteUser = new Modal(document.getElementById('modal-delete-user'));
-document.getElementById('form-delete-user').addEventListener('submit', window.modals.deleteUser.close);
-(document.getElementById('accounts-delete-user') as HTMLSpanElement).onclick = window.modals.deleteUser.toggle;
-
-window.modals.settingsRestart = new Modal(document.getElementById('modal-restart'));
-
-window.modals.settingsRefresh = new Modal(document.getElementById('modal-refresh'));
-
-window.modals.ombiDefaults = new Modal(document.getElementById('modal-ombi-defaults'));
-document.getElementById('form-ombi-defaults').addEventListener('submit', window.modals.ombiDefaults.close);
+login("", "");

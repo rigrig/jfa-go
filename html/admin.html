@@ -2,7 +2,12 @@
 <html lang="en" class="light-theme">
     <head>
         <link rel="stylesheet" type="text/css" href="css/base.css">
-        <title>jfa-no</title>
+
+        <script>
+            window.URLBase = "{{ .urlBase }}";
+        </script>
+        {{ template "header.html" . }}
+        <title>Admin - jfa-go</title>
     </head>
     <body class="max-w-full overflow-x-hidden section">
         <div id="modal-login" class="modal">
@@ -10,6 +15,7 @@
                 <span class="heading">Login</span>
                 <input type="text" class="field input ~neutral !high mt-half mb-1" placeholder="username" id="login-user">
                 <input type="password" class="field input ~neutral !high mb-1" placeholder="password" id="login-password">
+                <aside class="aside sm ~critical mb-half unfocused"></aside> 
                 <input type="submit" class="button ~urge !normal full-width center supra submit" value="Login">
             </form>
         </div>
@@ -26,8 +32,8 @@
                 <span class="heading">About <span class="modal-close">&times;</span></span>
                 <img src="images/banner.svg" class="mt-1" alt="jfa-go banner">
                 <p><i class="icon ri-github-fill"></i><a href="https://github.com/hrfee/jfa-go">jfa-go</a></p>
-                <p>Version <span class="code monospace">a17t-redesign</span></p>
-                <p>Commit <span class="code monospace">cb28097</span></p>
+                <p>Version <span class="code monospace">{{ .version }}</span></p>
+                <p>Commit <span class="code monospace">{{ .commit }}</span></p>
                 <p><a href="https://github.com/hrfee/jfa-go/blob/main/LICENSE">Available under the MIT License.</a></p>
             </div>
         </div>

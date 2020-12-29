@@ -1,0 +1,10 @@
+{{ define "form-base" }}
+<script> 
+    window.usernameEnabled = {{ .username }};
+    window.validationStrings = JSON.parse({{ .lang.validationStrings }});
+    window.invalidPassword = "{{ .lang.reEnterPasswordInvalid }}";
+    window.URLBase = "{{ .urlBase }}";
+</script>
+<script src="js/modal.js"></script>
+<script src="js/form.js" type="module"></script>
+{{ end }}

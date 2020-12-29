@@ -1,4 +1,4 @@
-This branch is for experimenting with [a17t](https://a17t.miles.land/) to possibly replace bootstrap in the future. Currently just working on the page structures, so none of this is actually usable in jfa-go yet.
+This branch is for experimenting with [a17t](https://a17t.miles.land/) to replace bootstrap. Page structure is pretty much done (except setup.html), so i'm currently integrating this with the main app and existing web code.
 
 #### todo
 **general**
@@ -15,7 +15,8 @@ This branch is for experimenting with [a17t](https://a17t.miles.land/) to possib
 * [ ] integration with existing code
 
 **invites**
-* [ ] everything
+* [x] page design
+* [ ] integration with existing code
 
 #### screenshots
 ##### dark

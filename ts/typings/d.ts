@@ -21,7 +21,23 @@ declare interface Window {
     buttonWidth: number;
     transitionEvent: string;
     animationEvent: string;
+    tabs: Tabs
 }
+
+declare interface Tabs {
+    tabs: Array<Tab>;
+    addTab: (tabID: string, preFunc?: () => void, postFunc?: () => void) => void;
+    switch: (tabID: string) => void;
+}
+
+declare interface Tab {
+    tabID: string;
+    tabEl: HTMLDivElement;
+    buttonEl: HTMLSpanElement;
+    preFunc?: () => void;
+    postFunc?: () => void;
+}
+
 
 declare interface Modals {
     about: Modal;
