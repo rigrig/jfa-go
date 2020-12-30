@@ -1,10 +1,28 @@
 import { _get, _post, _delete, toClipboard } from "../modules/common.js";
 
 export class DOMInvite implements Invite {
-    
-    // TODO
-    updateNotify = () => {}; // SetNotify
-    delete = () => {}; // deleteInvite
+    updateNotify = (checkbox: HTMLInputElement) => {
+        let state: { [code: string]: { [type: string]: boolean } } = {};
+        let revertChanges: () => void;
+        if (checkbox.classList.contains("inv-notify-expiry")) {
+            revertChanges = () => { this.notifyExpiry = !this.notifyExpiry };
+            state[this.code] = { "notify-expiry": this.notifyExpiry };
+        } else {
+            revertChanges = () => { this.notifyCreation = !this.notifyCreation };
+            state[this.code] = { "notify-creation": this.notifyCreation };
+        }
+        _post("/invites/notify", state, (req: XMLHttpRequest) => {
+            if (req.readyState == 4 && !(req.status == 200 || req.status == 204)) {
+                revertChanges();
+            }
+        });
+    }
+
+    delete = () => { _delete("/invites", { "code": this.code }, (req: XMLHttpRequest) => {
+        if (req.readyState == 4 && (req.status == 200 || req.status == 204)) {
+            this.remove();
+        }
+    }); }
     
     private _code: string = "None";
     get code(): string { return this._code; }
@@ -175,7 +193,7 @@ export class DOMInvite implements Invite {
 
         this._header = document.createElement('div') as HTMLDivElement;
         this._container.appendChild(this._header);
-        this._header.classList.add("card", "~neutral", "!normal", "inv-header", "flex-expand", "mt-half");
+        this._header.classList.add("card", "~neutral", "!normal", "inv-header", "flex-expand", "mt-half", "overflow");
 
         this._codeArea = document.createElement('div') as HTMLDivElement;
         this._header.appendChild(this._codeArea);
@@ -234,6 +252,11 @@ export class DOMInvite implements Invite {
             <span>On user creation</span>
         </label>
         `;
+        const notifyExpiry = this._left.querySelector("input.inv-notify-expiry") as HTMLInputElement;
+        notifyExpiry.onchange = () => { this._notifyExpiry = notifyExpiry.checked; this.updateNotify(notifyExpiry); };
+
+        const notifyCreation = this._left.querySelector("input.inv-notify-creation") as HTMLInputElement;
+        notifyCreation.onchange = () => { this._notifyCreation = notifyCreation.checked; this.updateNotify(notifyCreation); };
 
         this._middle = document.createElement('div') as HTMLDivElement;
         detailsInner.appendChild(this._middle);

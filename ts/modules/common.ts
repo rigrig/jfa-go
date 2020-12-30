@@ -56,11 +56,11 @@ export const _get = (url: string, data: Object, onreadystatechange: (req: XMLHtt
     req.responseType = 'json';
     req.setRequestHeader("Authorization", "Bearer " + window.token);
     req.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    req.onreadystatechange = () => { onreadystatechange(req); };
+    req.onreadystatechange = () => { if (req.status == 0) { window.notifications.connectionError(); } else { onreadystatechange(req); } };
     req.send(JSON.stringify(data));
 };
 
-export const _post = (url: string, data: Object, onreadystatechange: () => void, response?: boolean): void => {
+export const _post = (url: string, data: Object, onreadystatechange: (req: XMLHttpRequest) => void, response?: boolean): void => {
     let req = new XMLHttpRequest();
     req.open("POST", window.URLBase + url, true);
     if (response) {
@@ -68,16 +68,16 @@ export const _post = (url: string, data: Object, onreadystatechange: () => void,
     }
     req.setRequestHeader("Authorization", "Bearer " + window.token);
     req.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    req.onreadystatechange = onreadystatechange;
+    req.onreadystatechange = () => { if (req.status == 0) { window.notifications.connectionError(); } else { onreadystatechange(req); } };
     req.send(JSON.stringify(data));
 };
 
-export function _delete(url: string, data: Object, onreadystatechange: () => void): void {
+export function _delete(url: string, data: Object, onreadystatechange: (req: XMLHttpRequest) => void): void {
     let req = new XMLHttpRequest();
     req.open("DELETE", window.URLBase + url, true);
     req.setRequestHeader("Authorization", "Bearer " + window.token);
     req.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    req.onreadystatechange = onreadystatechange;
+    req.onreadystatechange = () => { if (req.status == 0) { window.notifications.connectionError(); } else { onreadystatechange(req); } };
     req.send(JSON.stringify(data));
 }
 
@@ -95,5 +95,34 @@ export function toClipboard (str: string) {
     if (selected) {
         document.getSelection().removeAllRanges();
         document.getSelection().addRange(selected);
+    }
+}
+
+export class notificationBox implements NotificationBox {
+    private _box: HTMLDivElement;
+    timeout: number
+    constructor(box: HTMLDivElement, timeout?: number) { this._box = box; this.timeout = timeout || 5; }
+
+    private _error = (message: string): HTMLElement => {
+        const noti = document.createElement('aside');
+        noti.classList.add("aside", "~critical", "!normal", "mt-half", "notification-error");
+        noti.innerHTML = `<strong>Error:</strong> ${message}`;
+        const closeButton = document.createElement('span') as HTMLSpanElement;
+        closeButton.classList.add("button", "~critical", "!low", "ml-1");
+        closeButton.innerHTML = `<i class="icon ri-close-line"></i>`;
+        closeButton.onclick = () => { this._box.removeChild(noti); };
+        noti.appendChild(closeButton);
+        return noti;
+    }
+    
+    private _connectionError: boolean = false;
+    connectionError = () => {
+        const noti = this._error("Couldn't connect to jfa-go.");
+        if (this._connectionError) {
+            this._box.querySelector("aside.notification-error").remove();
+        }
+        this._box.appendChild(noti);
+        this._connectionError = true;
+        setTimeout(() => { this._box.removeChild(noti); this._connectionError = false; }, this.timeout*1000);
     }
 }

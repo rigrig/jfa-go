@@ -23,6 +23,11 @@ declare interface Window {
     animationEvent: string;
     tabs: Tabs;
     invites: inviteList;
+    notifications: NotificationBox;
+}
+
+declare interface NotificationBox {
+    connectionError: (timeout: number) => void;
 }
 
 declare interface Tabs {

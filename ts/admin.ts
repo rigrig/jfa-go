@@ -2,6 +2,7 @@ import  { toggleTheme, loadTheme } from "./modules/theme.js";
 import { Modal } from "./modules/modal.js";
 import { Tabs } from "./modules/tabs.js";
 import { inviteList } from "./modules/invites.js";
+import { notificationBox } from "./modules/common.js";
 
 loadTheme();
 (document.getElementById('button-theme') as HTMLSpanElement).onclick = toggleTheme;
@@ -14,21 +15,8 @@ const whichAnimationEvent = () => {
     return "webkitAnimationEnd";
 }
 window.animationEvent = whichAnimationEvent();
-/*const toggles: HTMLInputElement[] = Array.from(document.getElementsByClassName('toggle-details'));
-for (let toggle of toggles) {
-    toggle.onclick = () => {
-        const el = toggle.parentElement.parentElement.parentElement.nextElementSibling as HTMLDivElement;
-        if (el.classList.contains("focused")) {
-            el.classList.toggle("focused");
-            el.classList.toggle("unfocused");
-        } else {
-            el.classList.toggle("unfocused");
-            el.classList.toggle("focused");
-        }
-        toggle.previousElementSibling.classList.toggle("rotated");
-        toggle.previousElementSibling.classList.toggle("not-rotated");
-    };
-}*/
+
+window.notifications = new notificationBox(document.getElementById('notification-box') as HTMLDivElement, 5);
 
 const checkInfUses = function (check: HTMLInputElement, mode = 2) {
     const uses = document.getElementById('inv-uses') as HTMLInputElement;
