@@ -14,7 +14,7 @@ declare interface Window {
     URLBase: string;
     modals: Modals;
     cssFile: string;
-    availableProfiles: Array<any>;
+    availableProfiles: string[];
     jfUsers: Array<Object>;
     notifications_enabled: boolean;
     token: string;
@@ -27,7 +27,8 @@ declare interface Window {
 }
 
 declare interface NotificationBox {
-    connectionError: (timeout: number) => void;
+    connectionError: () => void;
+    customError: (type: string, message: string) => void;
 }
 
 declare interface Tabs {

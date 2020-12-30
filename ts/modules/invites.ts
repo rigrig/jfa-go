@@ -1,6 +1,9 @@
 import { _get, _post, _delete, toClipboard } from "../modules/common.js";
 
 export class DOMInvite implements Invite {
+    // TODO
+    // add setProfile
+    //
     updateNotify = (checkbox: HTMLInputElement) => {
         let state: { [code: string]: { [type: string]: boolean } } = {};
         let revertChanges: () => void;
@@ -18,11 +21,13 @@ export class DOMInvite implements Invite {
         });
     }
 
-    delete = () => { _delete("/invites", { "code": this.code }, (req: XMLHttpRequest) => {
+    delete = () => _delete("/invites", { "code": this.code }, (req: XMLHttpRequest) => {
         if (req.readyState == 4 && (req.status == 200 || req.status == 204)) {
             this.remove();
+            const inviteDeletedEvent = new CustomEvent("inviteDeletedEvent", { "detail": this.code });
+            document.dispatchEvent(inviteDeletedEvent);
         }
-    }); }
+    })
     
     private _code: string = "None";
     get code(): string { return this._code; }
@@ -153,7 +158,23 @@ export class DOMInvite implements Invite {
             innerHTML += `<option value="${profile}" ${((profile == selected) && !noProfile) ? "selected" : ""}>${profile}</option>`;
         }
         select.innerHTML = innerHTML;
+        this._profile = selected;
     };
+    updateProfile = () => {
+        const select = this._left.querySelector("select") as HTMLSelectElement;
+        const previous = this.profile;
+        let profile = select.value;
+        if (profile == "noProfile") { profile = ""; }
+        _post("/invites/profile", { "invite": this.code, "profile": profile }, (req: XMLHttpRequest) => {
+            if (req.readyState == 4) {
+                if (!(req.status == 200 || req.status == 204)) {
+                    select.value = previous || "noProfile";
+                } else {
+                    this._profile = profile;
+                }
+            }
+        });
+    }
 
     private _container: HTMLDivElement;
 
@@ -202,7 +223,21 @@ export class DOMInvite implements Invite {
         <a class="code monospace mr-1" href=""></a>
         <span class="button ~info !normal" title="Copy invite link"><i class="ri-file-copy-line"></i></span>
         `;
-        (this._codeArea.querySelector("span.button") as HTMLSpanElement).onclick = () => { toClipboard(this._codeLink); };
+        const copyButton = this._codeArea.querySelector("span.button") as HTMLSpanElement;
+        copyButton.onclick = () => { 
+            toClipboard(this._codeLink);
+            const icon = copyButton.children[0];
+            icon.classList.remove("ri-file-copy-line");
+            icon.classList.add("ri-check-line");
+            copyButton.classList.remove("~info");
+            copyButton.classList.add("~positive");
+            setTimeout(() => {
+                icon.classList.remove("ri-check-line");
+                icon.classList.add("ri-file-copy-line");
+                copyButton.classList.remove("~positive");
+                copyButton.classList.add("~info");
+            }, 800);
+        };
 
         this._infoArea = document.createElement('div') as HTMLDivElement;
         this._header.appendChild(this._infoArea);
@@ -252,6 +287,8 @@ export class DOMInvite implements Invite {
             <span>On user creation</span>
         </label>
         `;
+        (this._left.querySelector("select") as HTMLSelectElement).onchange = this.updateProfile;
+
         const notifyExpiry = this._left.querySelector("input.inv-notify-expiry") as HTMLInputElement;
         notifyExpiry.onchange = () => { this._notifyExpiry = notifyExpiry.checked; this.updateNotify(notifyExpiry); };
 
@@ -276,6 +313,8 @@ export class DOMInvite implements Invite {
 
         this.expanded = false;
         this.update(invite);
+
+        document.addEventListener("profileLoadEvent", () => { this.loadProfiles(); }, false);
     }
 
     update = (invite: Invite) => {
@@ -295,19 +334,27 @@ export class DOMInvite implements Invite {
     remove = () => { this._container.remove(); }
 }
 
-// TODO:
-// implement inviteList as a class
-// inviteList has empty boolean value, set true adds an emptyInvite
-
 export class inviteList implements inviteList {
     private _list: HTMLDivElement;
     private _empty: boolean;
+    // since invite reload sends profiles, this event it broadcast so the createInvite object can load them.
+    private _profileLoadEvent = new CustomEvent("profileLoadEvent");
+
     invites: { [code: string]: DOMInvite };
 
     constructor() {
         this._list = document.getElementById('invites') as HTMLDivElement;
         this.empty = true;
         this.invites = {};
+        document.addEventListener("newInviteEvent", () => { this.reload(); }, false);
+        document.addEventListener("inviteDeletedEvent", (event: CustomEvent) => {
+            const code = event.detail;
+            const length = Object.keys(this.invites).length - 1; // store prior as Object.keys is undefined when there are no keys
+            delete this.invites[code];
+            if (length == 0) {
+                this.empty = true;
+            }
+        }, false);
     }
 
     get empty(): boolean { return this._empty; }
@@ -340,14 +387,12 @@ export class inviteList implements inviteList {
         this._list.appendChild(domInv.asElement());
     }
 
-    reload = () => { _get("/invites", null, (req: XMLHttpRequest) => {
+    reload = () => _get("/invites", null, (req: XMLHttpRequest) => {
         if (req.readyState == 4) {
             let data = req.response;
             window.availableProfiles = data["profiles"];
-            for (let code in this.invites) {
-                this.invites[code].loadProfiles();
-            }
-            if (data["invites"] === undefined || data["invites"].length == 0) {
+            document.dispatchEvent(this._profileLoadEvent);
+            if (data["invites"] === undefined || data["invites"] == null || data["invites"].length == 0) {
                 this.empty = true;
                 return;
             }
@@ -370,7 +415,7 @@ export class inviteList implements inviteList {
                 delete this.invites[code];
             }
         }
-    }) }
+    })
 }
     
 
@@ -394,66 +439,158 @@ function parseInvite(invite: { [f: string]: string | number | string[][] | boole
     parsed.notifyCreation = invite["notify-creation"] as boolean || false;
     return parsed;
 }
+
+export class createInvite {
+    private _sendToEnabled = document.getElementById("create-send-to-enabled") as HTMLInputElement;
+    private _sendTo = document.getElementById("create-send-to") as HTMLInputElement;
+    private _uses = document.getElementById('create-uses') as HTMLInputElement;
+    private _infUses = document.getElementById("create-inf-uses") as HTMLInputElement;
+    private _infUsesWarning = document.getElementById('create-inf-uses-warning') as HTMLParagraphElement;
+    private _createButton = document.getElementById("create-submit") as HTMLInputElement; // Actually a <span> but this allows "disabled"
+    private _profile = document.getElementById("create-profile") as HTMLSelectElement;
+    // Broadcast when new invite created
+    private _newInviteEvent = new CustomEvent("newInviteEvent");
+    private _firstLoad = true;
+
+    private _count: Number = 30;
+    private _populateNumbers = () => {
+        const fieldIDs = ["create-days", "create-hours", "create-minutes"];
+        for (let i = 0; i < fieldIDs.length; i++) {
+            const field = document.getElementById(fieldIDs[i]);
+            field.textContent = '';
+            for (let n = 0; n <= this._count; n++) {
+               const opt = document.createElement("option") as HTMLOptionElement;
+               opt.textContent = ""+n;
+               opt.value = ""+n;
+               field.appendChild(opt);
+            }
+        }
+    }
+
+    get sendToEnabled(): boolean {
+        return this._sendToEnabled.checked;
+    }
+    set sendToEnabled(state: boolean) {
+        this._sendToEnabled.checked = state;
+        this._sendTo.disabled = !state;
+        if (state) {
+            this._sendToEnabled.parentElement.classList.remove("~neutral");
+            this._sendToEnabled.parentElement.classList.add("~urge");
+        } else {
+            this._sendToEnabled.parentElement.classList.remove("~urge");
+            this._sendToEnabled.parentElement.classList.add("~neutral");
+        }
+    }
+
+    get infiniteUses(): boolean {
+        return this._infUses.checked;
+    }
+    set infiniteUses(state: boolean) {
+        this._infUses.checked = state;
+        this._uses.disabled = state;
+        if (state) {
+            this._infUses.parentElement.classList.remove("~neutral");
+            this._infUses.parentElement.classList.add("~urge");
+            this._infUsesWarning.classList.remove("unfocused");
+        } else {
+            this._infUses.parentElement.classList.remove("~urge");
+            this._infUses.parentElement.classList.add("~neutral");
+            this._infUsesWarning.classList.add("unfocused");
+        }
+    }
     
+    get uses(): number { return this._uses.valueAsNumber; }
+    set uses(n: number) { this._uses.valueAsNumber = n; }
 
+    private _checkDurationValidity = () => {
+        this._createButton.disabled = (this.days + this.hours + this.minutes == 0);
+    }
 
-/*
-function addInvite(invite: Invite): void {
-    const list = document.getElementById('invites') as HTMLDivElement;
-    const container = document.createElement('div') as HTMLDivElement;
-    container.classList.add("inv");
-    container.id = "invite-" + invite.code;
-    // invite header
-    const header = document.createElement("div") as HTMLDivElement;
-    (() => {
-        header.classList.add("card", "~neutral", "!normal", "inv-header", "flex-expand", "mt-half");
-        // code area (code, copy button, "sent to" message)
-        const codeArea = document.createElement('div') as HTMLDivElement;
-        (() => {
-            codeArea.classList.add('inv-codearea');
-            if (invite.empty) {
-                codeArea.innerHTML = `
-                <a class="code monospace">None</a>
-                `;
-                return;
+    get days(): number {
+        return +(document.getElementById("create-days") as HTMLSelectElement).value;
+    }
+    set days(n: number) {
+        (document.getElementById("create-days") as HTMLSelectElement).value = ""+n;
+        this._checkDurationValidity();
+    }
+    get hours(): number {
+        return +(document.getElementById("create-hours") as HTMLSelectElement).value;
+    }
+    set hours(n: number) {
+        (document.getElementById("create-hours") as HTMLSelectElement).value = ""+n;
+        this._checkDurationValidity();
+    }
+    get minutes(): number {
+        return +(document.getElementById("create-minutes") as HTMLSelectElement).value;
+    }
+    set minutes(n: number) {
+        (document.getElementById("create-minutes") as HTMLSelectElement).value = ""+n;
+        this._checkDurationValidity();
+    }
+
+    get sendTo(): string { return this._sendTo.value; }
+    set sendTo(address: string) { this._sendTo.value = address; }
+
+    get profile(): string { 
+        const val = this._profile.value;
+        if (val == "noProfile") {
+            return "";
+        }
+        return val;
+    }
+    set profile(p: string) {
+        if (p == "") { p = "noProfile"; }
+        this._profile.value = p;
+    }
+
+    loadProfiles = () => {
+        let innerHTML = `<option value="noProfile">No Profile</option>`;
+        for (let profile of window.availableProfiles) {
+            innerHTML += `<option value="${profile}">${profile}</option>`;
+        }
+        let selected = this.profile;
+        this._profile.innerHTML = innerHTML;
+        if (this._firstLoad) {
+            this.profile = window.availableProfiles[0] || "";
+            this._firstLoad = false;
+        } else {
+            this.profile = selected;
+        }
+    }
+
+    create = () => {
+        let send = {
+            "days": this.days,
+            "hours": this.hours,
+            "minutes": this.minutes,
+            "multiple-uses": (this.uses > 1 || this.infiniteUses),
+            "no-limit": this.infiniteUses,
+            "remaining-uses": this.uses,
+            "email": this.sendToEnabled ? this.sendTo : "",
+            "profile": this.profile
+        };
+        _post("/invites", send, (req: XMLHttpRequest) => {
+            if (req.readyState == 4 && (req.status == 200 || req.status == 204)) {
+                document.dispatchEvent(this._newInviteEvent);
             }
-            const link = window.location.href.split("#")[0] + "invite/" + invite.code;
-            let innerHTML = `
-            <a class="code monospace mr-1" href="${link}">${invite.code.replace(/-/g, '-')}</a>
-            <span class="button ~info !normal" title="Copy invite link"><i class="ri-file-copy-line"></i></span>
-            `;
-            if (invite.email) {
-                let email = invite.email;
-                if (!invite.email.includes("Failed to send to")) {
-                    email = "Sent to " + email;
-                }
-                innerHTML += `
-                <span class="support ml-1">${email}</span>
-                `;
-            }
-            codeArea.innerHTML = innerHTML;
-        })();
-        header.appendChild(codeArea);
+        });
+    }
 
-        // info area (expiry, delete, dropdown button)
-        const infoArea = document.createElement('div') as HTMLDivElement;
-        (() => {
-            infoArea.classList.add("inv-infoarea");
-            infoArea.innerHTML = `
-            <span class="inv-expiry mr-1">${invite.expiresIn}</span>
-            <span class="button ~critical !normal inv-delete">Delete</span>
-            <label>
-                <i class="icon ri-arrow-down-s-line not-rotated"></i>
-                <input class="toggle-details
-                `; /// LINE 70
-        })();
-            
-    })();
-    if (invite.empty) {
-        container.appendChild(header);
-        list.appendChild(container);
-        return;
+    constructor() {
+        this._populateNumbers();
+        this.days = 0;
+        this.hours = 0;
+        this.minutes = 30;
+        this._infUses.onchange = () => { this.infiniteUses = this.infiniteUses; };
+        this.infiniteUses = false;
+        this._sendToEnabled.onchange = () => { this.sendToEnabled = this.sendToEnabled; };
+        this.sendToEnabled = false;
+        this._createButton.onclick = this.create;
+        this.sendTo = "";
+        this.uses = 1;
+        document.addEventListener("profileLoadEvent", () => { this.loadProfiles(); }, false);
     }
 }
 
-*/
+
+

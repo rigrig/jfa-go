@@ -49,14 +49,21 @@ export const rmAttr = (el: HTMLElement, attr: string): void => {
 };
 
 export const addAttr = (el: HTMLElement, attr: string): void => el.classList.add(attr);
-
 export const _get = (url: string, data: Object, onreadystatechange: (req: XMLHttpRequest) => void): void => {
     let req = new XMLHttpRequest();
     req.open("GET", window.URLBase + url, true);
     req.responseType = 'json';
     req.setRequestHeader("Authorization", "Bearer " + window.token);
     req.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    req.onreadystatechange = () => { if (req.status == 0) { window.notifications.connectionError(); } else { onreadystatechange(req); } };
+    req.onreadystatechange = () => {
+        if (req.status == 0) {
+            window.notifications.connectionError();
+            return;
+        } else if (req.status == 401) {
+            window.notifications.customError("401Error", "Unauthorized. Try logging back in.");
+        }
+        onreadystatechange(req);
+    };
     req.send(JSON.stringify(data));
 };
 
@@ -68,7 +75,15 @@ export const _post = (url: string, data: Object, onreadystatechange: (req: XMLHt
     }
     req.setRequestHeader("Authorization", "Bearer " + window.token);
     req.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    req.onreadystatechange = () => { if (req.status == 0) { window.notifications.connectionError(); } else { onreadystatechange(req); } };
+    req.onreadystatechange = () => {
+        if (req.status == 0) {
+            window.notifications.connectionError();
+            return;
+        } else if (req.status == 401) {
+            window.notifications.customError("401Error", "Unauthorized. Try logging back in.");
+        }
+        onreadystatechange(req);
+    };
     req.send(JSON.stringify(data));
 };
 
@@ -77,7 +92,15 @@ export function _delete(url: string, data: Object, onreadystatechange: (req: XML
     req.open("DELETE", window.URLBase + url, true);
     req.setRequestHeader("Authorization", "Bearer " + window.token);
     req.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    req.onreadystatechange = () => { if (req.status == 0) { window.notifications.connectionError(); } else { onreadystatechange(req); } };
+    req.onreadystatechange = () => {
+        if (req.status == 0) {
+            window.notifications.connectionError();
+            return;
+        } else if (req.status == 401) {
+            window.notifications.customError("401Error", "Unauthorized. Try logging back in.");
+        }
+        onreadystatechange(req);
+    };
     req.send(JSON.stringify(data));
 }
 
@@ -100,7 +123,8 @@ export function toClipboard (str: string) {
 
 export class notificationBox implements NotificationBox {
     private _box: HTMLDivElement;
-    timeout: number
+    private _errorTypes: { [type: string]: boolean } = {};
+    timeout: number;
     constructor(box: HTMLDivElement, timeout?: number) { this._box = box; this.timeout = timeout || 5; }
 
     private _error = (message: string): HTMLElement => {
@@ -115,14 +139,26 @@ export class notificationBox implements NotificationBox {
         return noti;
     }
     
-    private _connectionError: boolean = false;
-    connectionError = () => {
-        const noti = this._error("Couldn't connect to jfa-go.");
-        if (this._connectionError) {
-            this._box.querySelector("aside.notification-error").remove();
+    connectionError = () => { this.customError("connectionError", "Couldn't connect to jfa-go"); }
+
+    customError = (type: string, message: string) => {
+        this._errorTypes[type] = this._errorTypes[type] || false;
+        const noti = this._error(message);
+        noti.classList.add("error-" + type);
+        const previousNoti: HTMLElement | undefined = this._box.querySelector("aside.error-" + type);
+        if (this._errorTypes[type] && previousNoti !== undefined && previousNoti != null) {
+            previousNoti.remove();
         }
         this._box.appendChild(noti);
-        this._connectionError = true;
-        setTimeout(() => { this._box.removeChild(noti); this._connectionError = false; }, this.timeout*1000);
+        this._errorTypes[type] = true;
+        setTimeout(() => { if (this._box.contains(noti)) { this._box.removeChild(noti); this._errorTypes[type] = false; } }, this.timeout*1000);
     }
+}
+
+export const whichAnimationEvent = () => {
+    const el = document.createElement("fakeElement");
+    if (el.style["animation"] !== void 0) {
+        return "animationend";
+    }
+    return "webkitAnimationEnd";
 }

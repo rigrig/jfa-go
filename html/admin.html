@@ -15,7 +15,6 @@
                 <span class="heading">Login</span>
                 <input type="text" class="field input ~neutral !high mt-half mb-1" placeholder="username" id="login-user">
                 <input type="password" class="field input ~neutral !high mb-1" placeholder="password" id="login-password">
-                <aside class="aside sm ~critical mb-half unfocused"></aside> 
                 <input type="submit" class="button ~urge !normal full-width center supra submit" value="Login">
             </form>
         </div>
@@ -30,7 +29,7 @@
         <div id="modal-about" class="modal">
             <div class="modal-content content card">
                 <span class="heading">About <span class="modal-close">&times;</span></span>
-                <img src="images/banner.svg" class="mt-1" alt="jfa-go banner">
+                <img src="/banner.svg" class="mt-1" alt="jfa-go banner">
                 <p><i class="icon ri-github-fill"></i><a href="https://github.com/hrfee/jfa-go">jfa-go</a></p>
                 <p>Version <span class="code monospace">{{ .version }}</span></p>
                 <p>Commit <span class="code monospace">{{ .commit }}</span></p>
@@ -126,174 +125,61 @@
             </div>
             <div class="mb-1">
                 <div class="text-neutral-700">
-                    <span class="button ~critical !normal mb-1">Logout</span>
+                    <span class="button ~critical !normal mb-1 unfocused" id="logout-button">Logout</span>
                     <span id="button-theme" class="button ~neutral !normal mb-1">Theme</span>
-                    <span id="modalButton" class="button ~neutral !normal mb-1">Trigger Login</span>
                 </div>
             </div>
             <div id="invitesTab">
                 <div class="card ~neutral !low invites mb-1">
                     <span class="heading">Invites</span>
-                    <div id="invites">
-                        <div class="inv">
-                            <div class="card ~neutral !normal inv-header flex-expand mt-half">
-                                <div class="inv-codearea">
-                                    <a href="#" class="code monospace mr-1">ZD8ZeC55Jcpmbtv54FuVM3</a>
-                                    <span class="button ~info !normal" title="Copy invite link"><i class="ri-file-copy-line"></i></span>
-                                    <span class="support ml-1">Failed to send to this.email@addre.ss</span>
-                                </div>
-                                <div class="inv-infoarea">
-                                    <span class="inv-expiry mr-1">Expires in 30m</span>
-                                    <span class="button ~critical !normal">Delete</span>
-                                    <label>
-                                        <i class="icon ri-arrow-down-s-line not-rotated"></i>
-                                        <input type="checkbox" class="toggle-details unfocused">
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="card ~neutral !normal mt-half inv-details mt-half unfocused">
-                                <div class="inv-row flex-expand align-top">
-                                    <div class="inv-profilearea">
-                                        <p class="supra mb-1 top">Profile</p>
-                                        <div class="select ~neutral !normal inv-profileselect inline-block">
-                                            <select>
-                                                <option>Friends</option>
-                                                <option>Family</option>
-                                                <option>No Profile</option>
-                                            </select>
-                                        </div>
-                                        <p class="label supra">Notify on:</p>
-                                        <label class="switch block">
-                                            <input type="checkbox" class="inv-notify-expiry">
-                                            <span>On expiry</span>
-                                        </label>
-                                        <label class="switch block">
-                                            <input type="checkbox" class="inv-notify-creation">
-                                            <span>On user creation</span>
-                                        </label>
-                                    </div>
-                                    <div class="block">
-                                        <p class="supra mb-1 top">Created <strong class="inv-created">10/12/20 18:46</strong></p>
-                                        <p class="supra mb-1">Remaining uses <strong class="inv-remaining">8</strong></p>
-                                    </div>
-                                    <div class="card ~neutral !low inv-created-users">
-                                        <strong class="supra table-header">Created users</strong>
-                                        <table class="table inv-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Name</th>
-                                                    <th>Date</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>jeff</td>
-                                                    <td>10/12/20 19:00</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="inv">
-                            <div class="card ~neutral !normal inv-header flex-expand mt-half">
-                                <div class="inv-codearea">
-                                    <a href="#" class="code monospace mr-1">ZD8ZeC55Jcpmbtv54FuVM3</a>
-                                    <span class="button ~info !normal">Copy</span>
-                                </div>
-                                <div class="inv-infoarea">
-                                    <span class="inv-expiry mr-1">Expires in 30m</span>
-                                    <span class="button ~critical !normal">Delete</span>
-                                    <label>
-                                        <i class="icon ri-arrow-down-s-line not-rotated"></i>
-                                        <input type="checkbox" class="toggle-details unfocused">
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="card ~neutral !normal mt-half inv-details mt-half unfocused">
-                                <div class="inv-row flex-expand align-top">
-                                    <div class="inv-profilearea">
-                                        <p class="supra mb-1 top">Profile</p>
-                                        <div class="select ~neutral !normal inv-profileselect inline-block">
-                                            <select>
-                                                <option>Friends</option>
-                                                <option>Family</option>
-                                                <option>No Profile</option>
-                                            </select>
-                                        </div>
-                                        <p class="label supra">Notify on:</p>
-                                        <label class="switch block">
-                                            <input type="checkbox" class="inv-notify-expiry">
-                                            <span>On expiry</span>
-                                        </label>
-                                        <label class="switch block">
-                                            <input type="checkbox" class="inv-notify-creation">
-                                            <span>On user creation</span>
-                                        </label>
-                                    </div>
-                                    <div class="block">
-                                        <p class="supra mb-1 top">Created <strong class="inv-created">10/12/20 18:46</strong></p>
-                                        <p class="supra mb-1">Remaining uses <strong class="inv-remaining">8</strong></p>
-                                    </div>
-                                    <div class="card ~neutral !low inv-created-users empty">
-                                        <strong class="supra table-header">Created users</strong>
-                                        <p class="content">None yet!</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div id="invites"></div>
                 </div>
-                <div class="card ~neutral !low create-inv">
+                <div class="card ~neutral !low">
                     <span class="heading">Create</span>
-                    <div class="row">
+                    <div class="row" id="create-inv">
                         <div class="card ~neutral !normal col">
-                            <label class="label supra" for="inv-days">Days</label>
+                            <label class="label supra" for="create-days">Days</label>
                             <div class="select ~neutral !normal mb-1 mt-half">
-                                <select id="inv-days">
+                                <select id="create-days">
                                     <option>0</option>
                                 </select>
                             </div>
-                            <label class="label supra" for="inv-hours">Hours</label>
+                            <label class="label supra" for="create-hours">Hours</label>
                             <div class="select ~neutral !normal mb-1 mt-half">
-                                <select id="inv-hours">
+                                <select id="create-hours">
                                     <option>0</option>
                                 </select>
                             </div>
-                            <label class="label supra" for="inv-minutes">Minutes</label>
+                            <label class="label supra" for="create-minutes">Minutes</label>
                             <div class="select ~neutral !normal mb-1 mt-half">
-                                <select id="inv-minutes">
+                                <select id="create-minutes">
                                     <option>0</option>
                                 </select>
                             </div>
                         </div>
                         <div class="card ~neutral !normal col">
-                            <label class="label supra" for="inv-uses">Number of uses</label>
+                            <label class="label supra" for="create-uses">Number of uses</label>
                             <div class="flex-expand mb-1 mt-half">
-                                <input type="number" min="0" id="inv-uses" class="input ~neutral !normal mr-1" value=1>
-                                <label for="inv-inf-uses" class="button ~neutral !normal">
+                                <input type="number" min="0" id="create-uses" class="input ~neutral !normal mr-1" value=1>
+                                <label for="create-inf-uses" class="button ~neutral !normal">
                                     <span>∞</span>
-                                    <input type="checkbox" class="unfocused" id="inv-inf-uses" aria-label="Set uses to infinite">
+                                    <input type="checkbox" class="unfocused" id="create-inf-uses" aria-label="Set uses to infinite">
                                 </label>
                             </div>
-                            <p class="support unfocused"><span class="badge ~critical">Warning</span> invites with infinite uses can be used abusively.</p>
+                            <p class="support unfocused" id="create-inf-uses-warning"><span class="badge ~critical">Warning</span> invites with infinite uses can be used abusively.</p>
                             <label class="label supra">Profile</label>
-                            <div class="select ~neutral !normal mb-1 mt-half" id="inv-profile">
-                                <select>
-                                    <option>Friends</option>
-                                    <option>Family</option>
-                                    <option>No Profile</option>
+                            <div class="select ~neutral !normal mb-1 mt-half">
+                                <select id="create-profile">
                                 </select>
                             </div>
                             <label class="label supra">Send to</label>
                             <div class="flex-expand mb-1 mt-half">
-                                <input type="email" id="inv-email" class="input ~neutral !normal mr-1" placeholder="example@example.com">
-                                <label for="inv-email-enabled" class="button ~neutral !normal">
-                                    <input type="checkbox" id="inv-email-enabled" aria-label="Send to address enabled">
+                                <input type="email" id="create-send-to" class="input ~neutral !normal mr-1" placeholder="example@example.com">
+                                <label for="create-send-to-enabled" class="button ~neutral !normal">
+                                    <input type="checkbox" id="create-send-to-enabled" aria-label="Send to address enabled">
                                 </label>
                             </div>
-                            <span class="button ~urge !normal supra full-width center lg">Create</span>
+                            <span class="button ~urge !normal supra full-width center lg" id="create-submit">Create</span>
                         </div>
                     </div>
                 </div>

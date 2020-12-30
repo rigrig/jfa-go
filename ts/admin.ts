@@ -1,73 +1,23 @@
 import  { toggleTheme, loadTheme } from "./modules/theme.js";
 import { Modal } from "./modules/modal.js";
 import { Tabs } from "./modules/tabs.js";
-import { inviteList } from "./modules/invites.js";
-import { notificationBox } from "./modules/common.js";
+import { inviteList, createInvite } from "./modules/invites.js";
+import { _post, notificationBox, whichAnimationEvent } from "./modules/common.js";
 
 loadTheme();
 (document.getElementById('button-theme') as HTMLSpanElement).onclick = toggleTheme;
 
-const whichAnimationEvent = () => {
-    const el = document.createElement("fakeElement");
-    if (el.style["animation"] !== void 0) {
-        return "animationend";
-    }
-    return "webkitAnimationEnd";
-}
 window.animationEvent = whichAnimationEvent();
 
+window.token = "";
+
+window.availableProfiles = window.availableProfiles || [];
+
+var inviteCreator = new createInvite();
+
+window.invites = new inviteList();
+
 window.notifications = new notificationBox(document.getElementById('notification-box') as HTMLDivElement, 5);
-
-const checkInfUses = function (check: HTMLInputElement, mode = 2) {
-    const uses = document.getElementById('inv-uses') as HTMLInputElement;
-    if (mode == 2) {
-        uses.disabled = check.checked;
-        check.parentElement.classList.toggle('~neutral');
-        check.parentElement.classList.toggle('~urge');
-        check.parentElement.parentElement.nextElementSibling.classList.toggle('unfocused');
-    } else if (mode == 1) {
-        uses.disabled = true;
-        check.checked = true;
-        check.parentElement.classList.remove('~neutral');
-        check.parentElement.classList.add('~urge');
-        check.parentElement.parentElement.nextElementSibling.classList.remove('unfocused');
-    } else {
-        uses.disabled = false;
-        check.checked = false;
-        check.parentElement.classList.remove('~urge');
-        check.parentElement.classList.add('~neutral');
-        check.parentElement.parentElement.nextElementSibling.classList.add('unfocused');
-    }
-};
-
-let invInfUses = document.getElementById('inv-inf-uses') as HTMLInputElement;
-invInfUses.onclick = () => { checkInfUses(invInfUses, 2); };
-
-const checkEmailEnabled = function (check: HTMLInputElement, mode = 2) {
-    const input = document.getElementById('inv-email') as HTMLInputElement;
-    if (mode == 2) {
-        input.disabled = !check.checked;
-        check.parentElement.classList.toggle('~neutral');
-        check.parentElement.classList.toggle('~urge');
-    } else if (mode == 1) {
-        input.disabled = false;
-        check.checked = true;
-        check.parentElement.classList.remove('~neutral');
-        check.parentElement.classList.add('~urge');
-    } else {
-        input.disabled = true;
-        check.checked = false;
-        check.parentElement.classList.remove('~urge');
-        check.parentElement.classList.add('~neutral');
-    }
-};
-
-let invEmailEnabled = document.getElementById('inv-email-enabled') as HTMLInputElement;
-invEmailEnabled.onchange = () => { checkEmailEnabled(invEmailEnabled, 2); };
-
-checkInfUses(invInfUses, 0);
-checkEmailEnabled(invEmailEnabled, 0);
-
 
 
 const loadAccounts = function () {
@@ -175,7 +125,6 @@ window.tabs.addTab("accountsTab", loadAccounts);
     window.modals = {} as Modals;
 
     window.modals.login = new Modal(document.getElementById('modal-login'), true);
-    document.getElementById('modalButton').onclick = window.modals.login.toggle;
 
     window.modals.addUser = new Modal(document.getElementById('modal-add-user'));
     (document.getElementById('accounts-add-user') as HTMLSpanElement).onclick = window.modals.addUser.toggle;
@@ -199,15 +148,6 @@ window.tabs.addTab("accountsTab", loadAccounts);
     window.modals.ombiDefaults = new Modal(document.getElementById('modal-ombi-defaults'));
     document.getElementById('form-ombi-defaults').addEventListener('submit', window.modals.ombiDefaults.close);
 })();
-
-
-function errorMessage(aside: HTMLElement, content: string, timeout: number = 4) {
-    aside.textContent = content;
-    aside.classList.remove("unfocused");
-    setTimeout(() => { aside.classList.add("unfocused"); }, timeout*1000);
-}
-
-window.token = "";
 
 function login(username: string, password: string) {
     const req = new XMLHttpRequest();
@@ -234,8 +174,7 @@ function login(username: string, password: string) {
                     errorMsg = "Unknown error";
                 }
                 if (!refresh) {
-                    errorMessage(window.modals.login.modal.querySelector("aside"), errorMsg, 5);
-                    
+                    window.notifications.customError("loginError", errorMsg);
                 } else {
                     window.modals.login.show();
                 }
@@ -245,6 +184,8 @@ function login(username: string, password: string) {
                 window.modals.login.close();
                 window.invites.reload();
                 setInterval(window.invites.reload, 30*1000);
+                document.getElementById("logout-button").classList.remove("unfocused");
+
                 /*generateInvites();
                 setInterval((): void => generateInvites(), 60 * 1000);
                 addOptions(30, document.getElementById('days') as HTMLSelectElement);
@@ -272,12 +213,18 @@ document.getElementById('form-login').addEventListener('submit', (event: Event) 
     const username = (document.getElementById("login-user") as HTMLInputElement).value;
     const password = (document.getElementById("login-password") as HTMLInputElement).value;
     if (!username || !password) {
-        errorMessage(window.modals.login.modal.querySelector("aside"), "The username and/or password were left blank." , 4);
+        window.notifications.customError("loginError", "The username and/or password were left blank.");
         return;
     }
-    login(username, password, true);
+    login(username, password);
 });
 
 login("", "");
 
-window.invites = new inviteList();
+(document.getElementById('logout-button') as HTMLButtonElement).onclick = () => _post("/logout", null, (req: XMLHttpRequest): boolean => {
+    if (req.readyState == 4 && req.status == 200) {
+        window.token = "";
+        location.reload();
+        return false;
+    }
+});
