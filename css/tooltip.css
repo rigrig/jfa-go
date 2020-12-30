@@ -16,7 +16,15 @@
 
     position: absolute;
     z-index: 1;
+    top: -1rem;
+}
+
+.tooltip.right .content {
     left: 120%;
+}
+
+.tooltip.left .content {
+    right: 120%;
 }
 
 .tooltip .content.sm {

@@ -1,6 +1,7 @@
 import  { toggleTheme, loadTheme } from "./modules/theme.js";
 import { Modal } from "./modules/modal.js";
 import { Tabs } from "./modules/tabs.js";
+import { inviteList } from "./modules/invites.js";
 
 loadTheme();
 (document.getElementById('button-theme') as HTMLSpanElement).onclick = toggleTheme;
@@ -13,7 +14,7 @@ const whichAnimationEvent = () => {
     return "webkitAnimationEnd";
 }
 window.animationEvent = whichAnimationEvent();
-const toggles: HTMLInputElement[] = Array.from(document.getElementsByClassName('toggle-details'));
+/*const toggles: HTMLInputElement[] = Array.from(document.getElementsByClassName('toggle-details'));
 for (let toggle of toggles) {
     toggle.onclick = () => {
         const el = toggle.parentElement.parentElement.parentElement.nextElementSibling as HTMLDivElement;
@@ -27,7 +28,7 @@ for (let toggle of toggles) {
         toggle.previousElementSibling.classList.toggle("rotated");
         toggle.previousElementSibling.classList.toggle("not-rotated");
     };
-}
+}*/
 
 const checkInfUses = function (check: HTMLInputElement, mode = 2) {
     const uses = document.getElementById('inv-uses') as HTMLInputElement;
@@ -254,6 +255,8 @@ function login(username: string, password: string) {
                 const data = this.response;
                 window.token = data["token"];
                 window.modals.login.close();
+                window.invites.reload();
+                setInterval(window.invites.reload, 30*1000);
                 /*generateInvites();
                 setInterval((): void => generateInvites(), 60 * 1000);
                 addOptions(30, document.getElementById('days') as HTMLSelectElement);
@@ -288,3 +291,5 @@ document.getElementById('form-login').addEventListener('submit', (event: Event) 
 });
 
 login("", "");
+
+window.invites = new inviteList();

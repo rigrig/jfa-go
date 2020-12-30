@@ -21,7 +21,8 @@ declare interface Window {
     buttonWidth: number;
     transitionEvent: string;
     animationEvent: string;
-    tabs: Tabs
+    tabs: Tabs;
+    invites: inviteList;
 }
 
 declare interface Tabs {
@@ -54,14 +55,20 @@ declare interface Modals {
 interface Invite {
     code?: string;
     expiresIn?: string;
-    empty: boolean;
     remainingUses?: string;
     email?: string;
-    usedBy?: Array<Array<string>>;
+    usedBy?: string[][];
     created?: string;
     notifyExpiry?: boolean;
     notifyCreation?: boolean;
     profile?: string;
+}
+
+interface inviteList {
+    empty: boolean;
+    invites: { [code: string]: Invite }
+    add: (invite: Invite) => void;
+    reload: () => void;
 }
 
 declare var config: Object;

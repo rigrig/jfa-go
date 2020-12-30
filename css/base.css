@@ -135,6 +135,10 @@ sup.\~critical, .text-critical {
     color: var(--color-critical-normal-content);
 }
 
+.grey {
+    color: var(--color-neutral-500);
+}
+
 .aside.sm {
     font-size: 0.8rem;
     padding: 0.8rem;
