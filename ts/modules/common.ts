@@ -124,6 +124,7 @@ export function toClipboard (str: string) {
 export class notificationBox implements NotificationBox {
     private _box: HTMLDivElement;
     private _errorTypes: { [type: string]: boolean } = {};
+    private _positiveTypes: { [type: string]: boolean } = {};
     timeout: number;
     constructor(box: HTMLDivElement, timeout?: number) { this._box = box; this.timeout = timeout || 5; }
 
@@ -139,7 +140,19 @@ export class notificationBox implements NotificationBox {
         return noti;
     }
     
-    connectionError = () => { this.customError("connectionError", "Couldn't connect to jfa-go"); }
+    private _positive = (bold: string, message: string): HTMLElement => {
+        const noti = document.createElement('aside');
+        noti.classList.add("aside", "~positive", "!normal", "mt-half", "notification-positive");
+        noti.innerHTML = `<strong>${bold}</strong> ${message}`;
+        const closeButton = document.createElement('span') as HTMLSpanElement;
+        closeButton.classList.add("button", "~positive", "!low", "ml-1");
+        closeButton.innerHTML = `<i class="icon ri-close-line"></i>`;
+        closeButton.onclick = () => { this._box.removeChild(noti); };
+        noti.appendChild(closeButton);
+        return noti;
+    }
+    
+    connectionError = () => { this.customError("connectionError", "Couldn't connect to jfa-go."); }
 
     customError = (type: string, message: string) => {
         this._errorTypes[type] = this._errorTypes[type] || false;
@@ -153,6 +166,19 @@ export class notificationBox implements NotificationBox {
         this._errorTypes[type] = true;
         setTimeout(() => { if (this._box.contains(noti)) { this._box.removeChild(noti); this._errorTypes[type] = false; } }, this.timeout*1000);
     }
+    
+    customPositive = (type: string, bold: string, message: string) => {
+        this._positiveTypes[type] = this._positiveTypes[type] || false;
+        const noti = this._positive(bold, message);
+        noti.classList.add("positive-" + type);
+        const previousNoti: HTMLElement | undefined = this._box.querySelector("aside.positive-" + type);
+        if (this._positiveTypes[type] && previousNoti !== undefined && previousNoti != null) {
+            previousNoti.remove();
+        }
+        this._box.appendChild(noti);
+        this._positiveTypes[type] = true;
+        setTimeout(() => { if (this._box.contains(noti)) { this._box.removeChild(noti); this._positiveTypes[type] = false; } }, this.timeout*1000);
+    }
 }
 
 export const whichAnimationEvent = () => {
@@ -161,4 +187,19 @@ export const whichAnimationEvent = () => {
         return "animationend";
     }
     return "webkitAnimationEnd";
+}
+
+export function toggleLoader(el: HTMLElement, small: boolean = true) {
+    if (el.classList.contains("loader")) {
+        el.classList.remove("loader");
+        el.classList.remove("loader-sm");
+        const dot = el.querySelector("span.dot");
+        if (dot) { dot.remove(); }
+    } else {
+        el.classList.add("loader");
+        if (small) { el.classList.add("loader-sm"); }
+        const dot = document.createElement("span") as HTMLSpanElement;
+        dot.classList.add("dot")
+        el.appendChild(dot);
+    }
 }

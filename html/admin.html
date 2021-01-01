@@ -5,6 +5,10 @@
 
         <script>
             window.URLBase = "{{ .urlBase }}";
+            window.notificationsEnabled = {{ .notifications }};
+            window.emailEnabled = {{ .email_enabled }};
+            window.ombiEnabled = {{ .ombiEnabled }};
+            window.usernamesEnabled = {{ .username }};
         </script>
         {{ template "header.html" . }}
         <title>Admin - jfa-go</title>
@@ -15,15 +19,22 @@
                 <span class="heading">Login</span>
                 <input type="text" class="field input ~neutral !high mt-half mb-1" placeholder="username" id="login-user">
                 <input type="password" class="field input ~neutral !high mb-1" placeholder="password" id="login-password">
-                <input type="submit" class="button ~urge !normal full-width center supra submit" value="Login">
+                <label>
+                    <input type="submit" class="unfocused">
+                    <span class="button ~urge !normal full-width center supra submit">Login</span>
+                </label>
             </form>
         </div>
         <div id="modal-add-user" class="modal">
             <form class="modal-content card" id="form-add-user" href="">
                 <span class="heading">New User <span class="modal-close">&times;</span></span>
                 <input type="text" class="field input ~neutral !high mt-half mb-1" placeholder="username" id="add-user-user">
+                <input type="email" class="field input ~neutral !high mt-half mb-1" placeholder="email address">
                 <input type="password" class="field input ~neutral !high mb-1" placeholder="password" id="add-user-password">
-                <input type="submit" class="button ~urge !normal full-width center supra submit" value="Create">
+                <label>
+                    <input type="submit" class="unfocused">
+                    <span class="button ~urge !normal full-width center supra submit">Create</span>
+                </label>
             </form>
         </div>
         <div id="modal-about" class="modal">
@@ -38,7 +49,7 @@
         </div>
         <div id="modal-modify-user" class="modal">
             <form class="modal-content card" id="form-modify-user" href="">
-                <span class="heading"><span id="header-modify-user">Modify Settings</span> <span class="modal-close">&times;</span></span>
+                <span class="heading">Modify Settings for <span id="header-modify-user"></span> <span class="modal-close">&times;</span></span>
                 <p class="content">Apply settings from an existing profile, or source them directly from a user.</p>
                 <div class="flex-row mb-1">
                     <label class="flex-row-group mr-1">
@@ -50,15 +61,15 @@
                         <span class="button ~neutral !normal supra full-width center">User</span>
                     </label>
                 </div>
-                <div id="modify-user-profiles" class="select ~neutral !normal mb-1">
-                    <select>
+                <div class="select ~neutral !normal mb-1">
+                    <select id="modify-user-profiles">
                         <option>Friends</option>
                         <option>Family</option>
                         <option>Default</option>
                     </select>
                 </div>
-                <div id="modify-user-users" class="select ~neutral !normal mb-1 unfocused">
-                    <select>
+                <div class="select ~neutral !normal mb-1 unfocused">
+                    <select id="modify-user-users">
                         <option>Person</option>
                         <option>Other person</option>
                     </select>
@@ -67,19 +78,25 @@
                     <input type="checkbox" id="modify-user-homescreen" checked>
                     <span>Apply homescreen layout</span>
                 </label>
-                <input type="submit" class="button ~urge !normal full-width center supra submit" value="Apply">
+                <label>
+                    <input type="submit" class="unfocused">
+                    <span class="button ~urge !normal full-width center supra submit">Apply</span>
+                </label>
             </form>
         </div>
         <div id="modal-delete-user" class="modal">
             <form class="modal-content card" id="form-delete-user" href="">
-                <span class="heading"><span id="header-delete-user">Delete User</span> <span class="modal-close">&times;</span></span>
+                <span class="heading">Delete <span id="header-delete-user"></span> <span class="modal-close">&times;</span></span>
                 <div class="content mt-half">
                     <label class="switch mb-1">
                         <input type="checkbox" id="delete-user-notify" checked>
                         <span>Send notification email</span>
                     </label>
                     <textarea id="textarea-delete-user" class="textarea full-width ~neutral !normal mb-1" placeholder="Your account has been deleted."></textarea>
-                    <input type="submit" class="button ~urge !normal full-width center supra submit" value="Apply">
+                    <label>
+                        <input type="submit" class="unfocused">
+                        <span class="button ~critical !normal full-width center supra submit">Delete</span>
+                    </label>
                 </div>
             </form>
         </div>
@@ -109,7 +126,10 @@
                         <option>Other person</option>
                     </select>
                 </div>
-                <input type="submit" class="button ~urge !normal full-width center supra submit" value="Submit">
+                <label>
+                    <input type="submit" class="unfocused">
+                    <span class="button ~urge !normal full-width center supra submit">Submit</span>
+                </label>
             </form>
         </div>
         <div id="notification-box"></div>
@@ -172,12 +192,14 @@
                                 <select id="create-profile">
                                 </select>
                             </div>
-                            <label class="label supra">Send to</label>
-                            <div class="flex-expand mb-1 mt-half">
-                                <input type="email" id="create-send-to" class="input ~neutral !normal mr-1" placeholder="example@example.com">
-                                <label for="create-send-to-enabled" class="button ~neutral !normal">
-                                    <input type="checkbox" id="create-send-to-enabled" aria-label="Send to address enabled">
-                                </label>
+                            <div id="create-send-to-container">
+                                <label class="label supra">Send to</label>
+                                <div class="flex-expand mb-1 mt-half">
+                                    <input type="email" id="create-send-to" class="input ~neutral !normal mr-1" placeholder="example@example.com">
+                                    <label for="create-send-to-enabled" class="button ~neutral !normal">
+                                        <input type="checkbox" id="create-send-to-enabled" aria-label="Send to address enabled">
+                                    </label>
+                                </div>
                             </div>
                             <span class="button ~urge !normal supra full-width center lg" id="create-submit">Create</span>
                         </div>
@@ -202,20 +224,7 @@
                                     <th>Last Active</th>
                                 </tr>
                             </thead>
-                            <tbody id="accounts-list">
-                                <tr>
-                                    <td><input type="checkbox" value=""></td>
-                                    <td>Person <span class="chip ~info ml-1">Admin</span></td>
-                                    <td><i class="icon ri-edit-line"></i><input type="email" class="input ~neutral !normal stealth-input stealth-input-hidden" value="email@addr.ess" readonly></td>
-                                    <td>13/12/20 00:39</td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" value=""></td>
-                                    <td>Other person</td>
-                                    <td><i class="icon ri-edit-line"></i><input type="email" class="input ~neutral !normal stealth-input stealth-input-hidden" value="eee@ma.il" readonly></td>
-                                    <td>12/12/20 17:46</td>
-                                </tr>
-                            </tbody>
+                            <tbody id="accounts-list"></tbody>
                         </table>
                     </div>
                 </div>

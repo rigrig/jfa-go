@@ -3,6 +3,7 @@
 @import "modal.css";
 @import "dark.css";
 @import "tooltip.css";
+@import "loader.css";
 
 :root {
     --border-width-default: 2px;
@@ -233,7 +234,7 @@ sup.\~critical, .text-critical {
     padding-bottom: 0.1rem;
     margin-left: 0.5rem;
     margin-right: 1rem;
-    max-width: 50%;
+    max-width: 75%;
 }
 
 .stealth-input-hidden {

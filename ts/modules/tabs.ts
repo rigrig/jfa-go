@@ -20,14 +20,14 @@ export class Tabs implements Tabs {
         for (let t of this.tabs) {
             if (t.tabID == tabID) {
                 t.buttonEl.classList.add("active", "~urge");
-                t.preFunc();
+                if (t.preFunc) { t.preFunc(); }
                 t.tabEl.classList.remove("unfocused");
+                if (t.postFunc) { t.postFunc(); }
             } else {
                 t.buttonEl.classList.remove("active");
                 t.buttonEl.classList.remove("~urge");
                 t.tabEl.classList.add("unfocused");
             }
-            t.postFunc();
         }
     }
 }

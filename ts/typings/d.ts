@@ -16,7 +16,10 @@ declare interface Window {
     cssFile: string;
     availableProfiles: string[];
     jfUsers: Array<Object>;
-    notifications_enabled: boolean;
+    notificationsEnabled: boolean;
+    emailEnabled: boolean;
+    ombiEnabled: boolean;
+    usernameEnabled: boolean;
     token: string;
     buttonWidth: number;
     transitionEvent: string;
@@ -29,6 +32,7 @@ declare interface Window {
 declare interface NotificationBox {
     connectionError: () => void;
     customError: (type: string, message: string) => void;
+    customPositive: (type: string, bold: string,  message: string) => void;
 }
 
 declare interface Tabs {
@@ -75,6 +79,10 @@ interface inviteList {
     invites: { [code: string]: Invite }
     add: (invite: Invite) => void;
     reload: () => void;
+}
+
+declare interface SubmitEvent extends Event {
+    submitter: HTMLInputElement;
 }
 
 declare var config: Object;

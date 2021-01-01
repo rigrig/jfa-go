@@ -1,4 +1,4 @@
-import { _get, _post, _delete, toClipboard } from "../modules/common.js";
+import { _get, _post, _delete, toClipboard, toggleLoader } from "../modules/common.js";
 
 export class DOMInvite implements Invite {
     // TODO
@@ -390,8 +390,10 @@ export class inviteList implements inviteList {
     reload = () => _get("/invites", null, (req: XMLHttpRequest) => {
         if (req.readyState == 4) {
             let data = req.response;
-            window.availableProfiles = data["profiles"];
-            document.dispatchEvent(this._profileLoadEvent);
+            if (req.status == 200) {
+                window.availableProfiles = data["profiles"];
+                document.dispatchEvent(this._profileLoadEvent);
+            }
             if (data["invites"] === undefined || data["invites"] == null || data["invites"].length == 0) {
                 this.empty = true;
                 return;
@@ -446,8 +448,13 @@ export class createInvite {
     private _uses = document.getElementById('create-uses') as HTMLInputElement;
     private _infUses = document.getElementById("create-inf-uses") as HTMLInputElement;
     private _infUsesWarning = document.getElementById('create-inf-uses-warning') as HTMLParagraphElement;
-    private _createButton = document.getElementById("create-submit") as HTMLInputElement; // Actually a <span> but this allows "disabled"
+    private _createButton = document.getElementById("create-submit") as HTMLSpanElement;
     private _profile = document.getElementById("create-profile") as HTMLSelectElement;
+
+    private _days = document.getElementById("create-days") as HTMLSelectElement;
+    private _hours = document.getElementById("create-hours") as HTMLSelectElement;
+    private _minutes = document.getElementById("create-minutes") as HTMLSelectElement;
+
     // Broadcast when new invite created
     private _newInviteEvent = new CustomEvent("newInviteEvent");
     private _firstLoad = true;
@@ -503,28 +510,34 @@ export class createInvite {
     set uses(n: number) { this._uses.valueAsNumber = n; }
 
     private _checkDurationValidity = () => {
-        this._createButton.disabled = (this.days + this.hours + this.minutes == 0);
+        if (this.days + this.hours + this.minutes == 0) {
+            this._createButton.setAttribute("disabled", "");
+            this._createButton.onclick = null;
+        } else {
+            this._createButton.removeAttribute("disabled");
+            this._createButton.onclick = this.create;
+        }
     }
 
     get days(): number {
-        return +(document.getElementById("create-days") as HTMLSelectElement).value;
+        return +this._days.value;
     }
     set days(n: number) {
-        (document.getElementById("create-days") as HTMLSelectElement).value = ""+n;
+        this._days.value = ""+n;
         this._checkDurationValidity();
     }
     get hours(): number {
-        return +(document.getElementById("create-hours") as HTMLSelectElement).value;
+        return +this._hours.value;
     }
     set hours(n: number) {
-        (document.getElementById("create-hours") as HTMLSelectElement).value = ""+n;
+        this._hours.value = ""+n;
         this._checkDurationValidity();
     }
     get minutes(): number {
-        return +(document.getElementById("create-minutes") as HTMLSelectElement).value;
+        return +this._minutes.value;
     }
     set minutes(n: number) {
-        (document.getElementById("create-minutes") as HTMLSelectElement).value = ""+n;
+        this._minutes.value = ""+n;
         this._checkDurationValidity();
     }
 
@@ -559,6 +572,7 @@ export class createInvite {
     }
 
     create = () => {
+        toggleLoader(this._createButton);
         let send = {
             "days": this.days,
             "hours": this.hours,
@@ -570,8 +584,11 @@ export class createInvite {
             "profile": this.profile
         };
         _post("/invites", send, (req: XMLHttpRequest) => {
-            if (req.readyState == 4 && (req.status == 200 || req.status == 204)) {
-                document.dispatchEvent(this._newInviteEvent);
+            if (req.readyState == 4) {
+                if (req.status == 200 || req.status == 204) {
+                    document.dispatchEvent(this._newInviteEvent);
+                }
+                toggleLoader(this._createButton);
             }
         });
     }
@@ -588,7 +605,15 @@ export class createInvite {
         this._createButton.onclick = this.create;
         this.sendTo = "";
         this.uses = 1;
+
+        this._days.onchange = this._checkDurationValidity;
+        this._hours.onchange = this._checkDurationValidity;
+        this._minutes.onchange = this._checkDurationValidity;
         document.addEventListener("profileLoadEvent", () => { this.loadProfiles(); }, false);
+
+        if (!window.emailEnabled) {
+            document.getElementById("create-send-to-container").classList.add("unfocused");
+        }
     }
 }
 

@@ -2,7 +2,8 @@ import  { toggleTheme, loadTheme } from "./modules/theme.js";
 import { Modal } from "./modules/modal.js";
 import { Tabs } from "./modules/tabs.js";
 import { inviteList, createInvite } from "./modules/invites.js";
-import { _post, notificationBox, whichAnimationEvent } from "./modules/common.js";
+import { accountsList } from "./modules/accounts.js";
+import { _post, notificationBox, whichAnimationEvent, toggleLoader } from "./modules/common.js";
 
 loadTheme();
 (document.getElementById('button-theme') as HTMLSpanElement).onclick = toggleTheme;
@@ -13,75 +14,37 @@ window.token = "";
 
 window.availableProfiles = window.availableProfiles || [];
 
+// load modals
+(() => {
+    window.modals = {} as Modals;
+
+    window.modals.login = new Modal(document.getElementById('modal-login'), true);
+
+    window.modals.addUser = new Modal(document.getElementById('modal-add-user'));
+
+    window.modals.about = new Modal(document.getElementById('modal-about'));
+    (document.getElementById('setting-about') as HTMLSpanElement).onclick = window.modals.about.toggle;
+
+    window.modals.modifyUser = new Modal(document.getElementById('modal-modify-user'));
+
+    window.modals.deleteUser = new Modal(document.getElementById('modal-delete-user'));
+
+    window.modals.settingsRestart = new Modal(document.getElementById('modal-restart'));
+
+    window.modals.settingsRefresh = new Modal(document.getElementById('modal-refresh'));
+
+    window.modals.ombiDefaults = new Modal(document.getElementById('modal-ombi-defaults'));
+    document.getElementById('form-ombi-defaults').addEventListener('submit', window.modals.ombiDefaults.close);
+})();
+
 var inviteCreator = new createInvite();
+var accounts = new accountsList();
 
 window.invites = new inviteList();
 
 window.notifications = new notificationBox(document.getElementById('notification-box') as HTMLDivElement, 5);
 
-
-const loadAccounts = function () {
-    const rows: HTMLTableRowElement[] = Array.from(document.getElementById("accounts-list").children);
-    const selectAll = document.getElementById("accounts-select-all") as HTMLInputElement;
-    selectAll.onchange = () => {
-        for (let i = 0; i < rows.length; i++) {
-            (rows[i].querySelector("input[type=checkbox]") as HTMLInputElement).checked = selectAll.checked;
-        }
-    }
-
-    const checkAllChecks = (state: boolean): boolean => {
-        let s = true;
-        for (let i = 0; i < rows.length; i++) {
-            const selectCheck = rows[i].querySelector("input[type=checkbox]") as HTMLInputElement;
-            if (selectCheck.checked != state) {
-                s = false;
-                break;
-            }
-        }
-        return s
-    }
-
-    for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const selectCheck = row.querySelector("input[type=checkbox]") as HTMLInputElement;
-        selectCheck.addEventListener("change", () => {
-            if (checkAllChecks(false)) {
-                selectAll.indeterminate = false;
-                selectAll.checked = false;
-            } else if (checkAllChecks(true)) {
-                selectAll.checked = true;
-                selectAll.indeterminate = false;
-            } else { 
-                selectAll.indeterminate = true;
-                selectAll.checked = false;
-            }
-
-
-        });
-        const editButton = row.querySelector(".icon") as HTMLElement;
-        const emailInput = row.querySelector(".input") as HTMLInputElement;
-        const outerClickListener = (event: Event) => {
-            if (!(event.target instanceof HTMLElement && (emailInput.contains(event.target) || editButton.contains(event.target)))) {
-                emailInput.classList.toggle('stealth-input-hidden');
-                emailInput.readOnly = !emailInput.readOnly;
-                editButton.classList.toggle('ri-edit-line');
-                editButton.classList.toggle('ri-check-line');
-                document.removeEventListener('click', outerClickListener);
-            }
-        };
-        editButton.onclick = function () {
-            emailInput.classList.toggle('stealth-input-hidden');
-            emailInput.readOnly = !emailInput.readOnly;
-            editButton.classList.toggle('ri-edit-line');
-            editButton.classList.toggle('ri-check-line');
-            if (editButton.classList.contains('ri-check-line')) {
-                document.addEventListener('click', outerClickListener);
-            }
-        };
-    }
-};
-
-const modifySettingsSource = function () {
+/*const modifySettingsSource = function () {
     const profile = document.getElementById('radio-use-profile') as HTMLInputElement;
     const user = document.getElementById('radio-use-user') as HTMLInputElement;
     const profileSelect = document.getElementById('modify-user-profiles') as HTMLDivElement;
@@ -92,64 +55,16 @@ const modifySettingsSource = function () {
     (profile.nextElementSibling as HTMLSpanElement).classList.toggle('!high');
     profileSelect.classList.toggle('unfocused');
     userSelect.classList.toggle('unfocused');
-}
-
-const radioUseProfile = document.getElementById('radio-use-profile') as HTMLInputElement;
-radioUseProfile.addEventListener("change", modifySettingsSource);
-radioUseProfile.checked = true;
-const radioUseUser = document.getElementById('radio-use-user') as HTMLInputElement;
-radioUseUser.addEventListener("change", modifySettingsSource);
-radioUseUser.checked = false;
-
-const checkDeleteUserNotify = function () {
-    if ((document.getElementById('delete-user-notify') as HTMLInputElement).checked) {
-        document.getElementById('textarea-delete-user').classList.remove('unfocused');
-    } else {
-        document.getElementById('textarea-delete-user').classList.add('unfocused');
-    }
-};
-
-(document.getElementById('delete-user-notify') as HTMLInputElement).onchange = checkDeleteUserNotify;
-checkDeleteUserNotify();
-
+}*/
 
 // load tabs
 window.tabs = new Tabs();
-for (let tabID of ["invitesTab", "accountsTab", "settingsTab"]) {
+for (let tabID of ["invitesTab", "settingsTab"]) {
     window.tabs.addTab(tabID);
 }
-window.tabs.addTab("accountsTab", loadAccounts);
+window.tabs.addTab("accountsTab", null, accounts.reload);
 
-// load modals
-(() => {
-    window.modals = {} as Modals;
-
-    window.modals.login = new Modal(document.getElementById('modal-login'), true);
-
-    window.modals.addUser = new Modal(document.getElementById('modal-add-user'));
-    (document.getElementById('accounts-add-user') as HTMLSpanElement).onclick = window.modals.addUser.toggle;
-    document.getElementById('form-add-user').addEventListener('submit', window.modals.addUser.close);
-
-    window.modals.about = new Modal(document.getElementById('modal-about'));
-    (document.getElementById('setting-about') as HTMLSpanElement).onclick = window.modals.about.toggle;
-
-    window.modals.modifyUser = new Modal(document.getElementById('modal-modify-user'));
-    document.getElementById('form-modify-user').addEventListener('submit', window.modals.modifyUser.close);
-    (document.getElementById('accounts-modify-user') as HTMLSpanElement).onclick = window.modals.modifyUser.toggle;
-
-    window.modals.deleteUser = new Modal(document.getElementById('modal-delete-user'));
-    document.getElementById('form-delete-user').addEventListener('submit', window.modals.deleteUser.close);
-    (document.getElementById('accounts-delete-user') as HTMLSpanElement).onclick = window.modals.deleteUser.toggle;
-
-    window.modals.settingsRestart = new Modal(document.getElementById('modal-restart'));
-
-    window.modals.settingsRefresh = new Modal(document.getElementById('modal-refresh'));
-
-    window.modals.ombiDefaults = new Modal(document.getElementById('modal-ombi-defaults'));
-    document.getElementById('form-ombi-defaults').addEventListener('submit', window.modals.ombiDefaults.close);
-})();
-
-function login(username: string, password: string) {
+function login(username: string, password: string, run?: (state?: number) => void) {
     const req = new XMLHttpRequest();
     req.responseType = 'json';
     let url = window.URLBase;
@@ -183,41 +98,28 @@ function login(username: string, password: string) {
                 window.token = data["token"];
                 window.modals.login.close();
                 window.invites.reload();
-                setInterval(window.invites.reload, 30*1000);
+                accounts.reload();
+                setInterval(() => { window.invites.reload(); accounts.reload(); }, 30*1000);
                 document.getElementById("logout-button").classList.remove("unfocused");
-
-                /*generateInvites();
-                setInterval((): void => generateInvites(), 60 * 1000);
-                addOptions(30, document.getElementById('days') as HTMLSelectElement);
-                addOptions(24, document.getElementById('hours') as HTMLSelectElement);
-                const minutes = document.getElementById('minutes') as HTMLSelectElement;
-                addOptions(59, minutes);
-                minutes.value = "30";
-                checkDuration();
-                if (modal) {
-                    window.Modals.login.hide();
-                }
-                Focus(document.getElementById('logoutButton'));
             }
-            if (run) {
-                run(+this.status);
-            }*/
-            }
+            if (run) { run(+this.status); }
         }
     };
     req.send();
 }
 
-document.getElementById('form-login').addEventListener('submit', (event: Event) => {
+(document.getElementById('form-login') as HTMLFormElement).onsubmit = (event: SubmitEvent) => {
     event.preventDefault();
+    const button = (event.target as HTMLElement).querySelector(".submit") as HTMLSpanElement;
     const username = (document.getElementById("login-user") as HTMLInputElement).value;
     const password = (document.getElementById("login-password") as HTMLInputElement).value;
     if (!username || !password) {
         window.notifications.customError("loginError", "The username and/or password were left blank.");
         return;
     }
-    login(username, password);
-});
+    toggleLoader(button);
+    login(username, password, () => toggleLoader(button));
+};
 
 login("", "");
 
@@ -228,3 +130,4 @@ login("", "");
         return false;
     }
 });
+
