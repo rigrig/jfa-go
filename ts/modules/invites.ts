@@ -270,30 +270,37 @@ export class DOMInvite implements Invite {
         this._left = document.createElement('div') as HTMLDivElement;
         detailsInner.appendChild(this._left);
         this._left.classList.add("inv-profilearea");
-        this._left.innerHTML = `
+        let innerHTML = `
         <p class="supra mb-1 top">Profile</p>
         <div class="select ~neutral !normal inv-profileselect inline-block">
             <select>
                 <option value="noProfile" selected>No Profile</option>
             </select>
         </div>
-        <p class="label supra">Notify on:</p>
-        <label class="switch block">
-            <input class="inv-notify-expiry" type="checkbox">
-            <span>On expiry</span>
-        </label>
-        <label class="switch block">
-            <input class="inv-notify-creation" type="checkbox">
-            <span>On user creation</span>
-        </label>
         `;
+        if (window.notificationsEnabled) {
+            innerHTML += `
+            <p class="label supra">Notify on:</p>
+            <label class="switch block">
+                <input class="inv-notify-expiry" type="checkbox">
+                <span>On expiry</span>
+            </label>
+            <label class="switch block">
+                <input class="inv-notify-creation" type="checkbox">
+                <span>On user creation</span>
+            </label>
+            `;
+        }
+        this._left.innerHTML = innerHTML;
         (this._left.querySelector("select") as HTMLSelectElement).onchange = this.updateProfile;
+        
+        if (window.notificationsEnabled) {
+            const notifyExpiry = this._left.querySelector("input.inv-notify-expiry") as HTMLInputElement;
+            notifyExpiry.onchange = () => { this._notifyExpiry = notifyExpiry.checked; this.updateNotify(notifyExpiry); };
 
-        const notifyExpiry = this._left.querySelector("input.inv-notify-expiry") as HTMLInputElement;
-        notifyExpiry.onchange = () => { this._notifyExpiry = notifyExpiry.checked; this.updateNotify(notifyExpiry); };
-
-        const notifyCreation = this._left.querySelector("input.inv-notify-creation") as HTMLInputElement;
-        notifyCreation.onchange = () => { this._notifyCreation = notifyCreation.checked; this.updateNotify(notifyCreation); };
+            const notifyCreation = this._left.querySelector("input.inv-notify-creation") as HTMLInputElement;
+            notifyCreation.onchange = () => { this._notifyCreation = notifyCreation.checked; this.updateNotify(notifyCreation); };
+        }
 
         this._middle = document.createElement('div') as HTMLDivElement;
         detailsInner.appendChild(this._middle);
@@ -322,8 +329,10 @@ export class DOMInvite implements Invite {
         this.created = invite.created;
         this.email = invite.email;
         this.expiresIn = invite.expiresIn;
-        this.notifyCreation = invite.notifyCreation;
-        this.notifyExpiry = invite.notifyExpiry;
+        if (window.notificationsEnabled) {
+            this.notifyCreation = invite.notifyCreation;
+            this.notifyExpiry = invite.notifyExpiry;
+        }
         this.profile = invite.profile;
         this.remainingUses = invite.remainingUses;
         this.usedBy = invite.usedBy;

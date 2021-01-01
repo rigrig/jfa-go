@@ -170,6 +170,10 @@ sup.\~critical, .text-critical {
     font-size: 0.8rem;
 }
 
+.inv-profilearea {
+    min-width: 20%;
+}
+
 .inv-profileselect {
     min-width: 100%;
 }
