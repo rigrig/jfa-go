@@ -1,9 +1,6 @@
 import { _get, _post, _delete, toClipboard, toggleLoader } from "../modules/common.js";
 
 export class DOMInvite implements Invite {
-    // TODO
-    // add setProfile
-    //
     updateNotify = (checkbox: HTMLInputElement) => {
         let state: { [code: string]: { [type: string]: boolean } } = {};
         let revertChanges: () => void;
@@ -58,16 +55,19 @@ export class DOMInvite implements Invite {
     get email(): string { return this._email };
     set email(address: string) {
         this._email = address;
-        const icon = this._infoArea.querySelector(".tooltip i");
-        const chip = this._infoArea.querySelector(".tooltip span.inv-email-chip");
-        const tooltip = this._infoArea.querySelector(".tooltip span.content") as HTMLSpanElement;
+        const container = this._infoArea.querySelector(".tooltip") as HTMLDivElement;
+        const icon = container.querySelector("i");
+        const chip = container.querySelector("span.inv-email-chip");
+        const tooltip = container.querySelector("span.content") as HTMLSpanElement;
         if (address == "") {
+            container.classList.remove("mr-1");
             icon.classList.remove("ri-mail-line");
             icon.classList.remove("ri-mail-close-line");
             chip.classList.remove("~neutral");
             chip.classList.remove("~critical");
             chip.classList.remove("chip");
         } else {
+            container.classList.add("mr-1");
             chip.classList.add("chip");
             if (address.includes("Failed to send to")) {
                 icon.classList.remove("ri-mail-line");
@@ -214,13 +214,13 @@ export class DOMInvite implements Invite {
 
         this._header = document.createElement('div') as HTMLDivElement;
         this._container.appendChild(this._header);
-        this._header.classList.add("card", "~neutral", "!normal", "inv-header", "flex-expand", "mt-half", "overflow");
+        this._header.classList.add("card", "~neutral", "!normal", "inv-header", "elem-pad", "no-pad", "flex-expand", "row", "mt-half", "overflow-y");
 
         this._codeArea = document.createElement('div') as HTMLDivElement;
         this._header.appendChild(this._codeArea);
         this._codeArea.classList.add("inv-codearea");
         this._codeArea.innerHTML = `
-        <a class="code monospace mr-1" href=""></a>
+        <a class="invite-link code monospace mr-1" href=""></a>
         <span class="button ~info !normal" title="Copy invite link"><i class="ri-file-copy-line"></i></span>
         `;
         const copyButton = this._codeArea.querySelector("span.button") as HTMLSpanElement;
@@ -243,14 +243,14 @@ export class DOMInvite implements Invite {
         this._header.appendChild(this._infoArea);
         this._infoArea.classList.add("inv-infoarea");
         this._infoArea.innerHTML = `
-        <div class="tooltip left mr-1">
+        <div class="tooltip left">
             <span class="inv-email-chip"><i></i></span>
             <span class="content sm"></span>
         </div>
         <span class="inv-expiry mr-1"></span>
         <span class="button ~critical !normal inv-delete">Delete</span>
         <label>
-            <i class="icon ri-arrow-down-s-line not-rotated"></i>
+            <i class="icon clickable ri-arrow-down-s-line not-rotated"></i>
             <input class="inv-toggle-details unfocused" type="checkbox">
         </label>
         `;
@@ -262,10 +262,10 @@ export class DOMInvite implements Invite {
 
         this._details = document.createElement('div') as HTMLDivElement;
         this._container.appendChild(this._details);
-        this._details.classList.add("card", "~neutral", "!normal", "mt-half", "inv-details");
+        this._details.classList.add("card", "~neutral", "!normal", "mt-half", "no-pad", "inv-details");
         const detailsInner = document.createElement('div') as HTMLDivElement;
         this._details.appendChild(detailsInner);
-        detailsInner.classList.add("inv-row", "flex-expand", "align-top");
+        detailsInner.classList.add("inv-row", "flex-expand", "row", "elem-pad", "align-top");
 
         this._left = document.createElement('div') as HTMLDivElement;
         detailsInner.appendChild(this._left);
