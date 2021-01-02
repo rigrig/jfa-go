@@ -1,0 +1,478 @@
+import { _get } from "../modules/common.js";
+
+interface settingsBoolEvent extends Event { 
+    detail: boolean;
+}
+
+interface Profile {
+    Admin: boolean;
+    LibraryAccess: string;
+    FromUser: string;
+}
+
+interface Meta {
+    name: string;
+    description: string;
+}
+
+interface Setting {
+    name: string;
+    description: string;
+    required: boolean;
+    requires_restart: boolean;
+    type: string;
+    value: string | boolean | number;
+    depends_true?: Setting;
+    depends_false?: Setting;
+
+    asElement: () => HTMLElement;
+    update: (s: Setting) => void;
+}
+
+class DOMInput {
+    protected _input: HTMLInputElement;
+    private _container: HTMLDivElement;
+    private _tooltip: HTMLDivElement;
+    private _required: HTMLSpanElement;
+    private _restart: HTMLSpanElement;
+
+    get name(): string { return this._container.querySelector("span.setting-label").textContent; }
+    set name(n: string) { this._container.querySelector("span.setting-label").textContent = n; }
+
+    get description(): string { return this._tooltip.querySelector("span.content").textContent; } 
+    set description(d: string) {
+        const content = this._tooltip.querySelector("span.content") as HTMLSpanElement;
+        content.textContent = d;
+        if (d == "") {
+            this._tooltip.classList.add("unfocused");
+        } else {
+            this._tooltip.classList.remove("unfocused");
+        }
+    }
+
+    get required(): boolean { return this._required.classList.contains("badge"); }
+    set required(state: boolean) {
+        if (state) {
+            this._required.classList.add("badge", "~critical");
+            this._required.textContent = "*";
+        } else {
+            this._required.classList.remove("badge", "~critical");
+            this._required.textContent = "";
+        }
+    }
+    
+    get requires_restart(): boolean { return this._restart.classList.contains("badge"); }
+    set requires_restart(state: boolean) {
+        if (state) {
+            this._restart.classList.add("badge", "~critical");
+            this._restart.textContent = "R";
+        } else {
+            this._restart.classList.remove("badge", "~critical");
+            this._restart.textContent = "";
+        }
+    }
+
+    constructor(inputType: string, setting: Setting, section: string) {
+        this._container = document.createElement("div");
+        this._container.classList.add("setting");
+        this._container.innerHTML = `
+        <label class="label">
+            <span class="setting-label"></span> <span class="setting-required"></span> <span class="setting-restart"></span>
+            <div class="setting-tooltip tooltip right unfocused">
+                <i class="icon ri-information-line"></i>
+                <span class="content sm"></span>
+            </div>
+            <input type="${inputType}" class="input ~neutral !normal mt-half">
+        </label>
+        `;
+        this._tooltip = this._container.querySelector("div.setting-tooltip") as HTMLDivElement;
+        this._required = this._container.querySelector("span.setting-required") as HTMLSpanElement;
+        this._restart = this._container.querySelector("span.setting-restart") as HTMLSpanElement;
+        this._input = this._container.querySelector("input[type=" + inputType + "]") as HTMLInputElement;
+        if (setting.depends_false || setting.depends_true) {
+            let dependant = setting.depends_true || setting.depends_false;
+            let state = true;
+            if (setting.depends_false) { state = false; }
+            document.addEventListener(`settings-${section}-${dependant}`, (event: settingsBoolEvent) => {
+                this._input.disabled = (event.detail !== state);
+            });
+        }
+        this.update(setting);
+    }
+
+    get value(): any { return this._input.value; }
+    set value(v: any) { this._input.value = v; }
+
+    update = (s: Setting) => {
+        this.name = s.name;
+        this.description = s.description;
+        this.required = s.required;
+        this.requires_restart = s.requires_restart;
+        this.value = s.value;
+    }
+    
+    asElement = (): HTMLDivElement => { return this._container; }
+}
+
+interface SText extends Setting {
+    value: string;
+}
+class DOMText extends DOMInput implements SText {
+    constructor(setting: Setting, section: string) { super("text", setting, section); }
+    type: string = "text";
+    get value(): string { return this._input.value }
+    set value(v: string) { this._input.value = v; }
+}
+
+interface SPassword extends Setting {
+    value: string;
+}
+class DOMPassword extends DOMInput implements SPassword {
+    constructor(setting: Setting, section: string) { super("password", setting, section); }
+    type: string = "password";
+    get value(): string { return this._input.value }
+    set value(v: string) { this._input.value = v; }
+}
+
+interface SEmail extends Setting {
+    value: string;
+}
+class DOMEmail extends DOMInput implements SEmail {
+    constructor(setting: Setting, section: string) { super("email", setting, section); }
+    type: string = "email";
+    get value(): string { return this._input.value }
+    set value(v: string) { this._input.value = v; }
+}
+
+interface SNumber extends Setting {
+    value: number;
+}
+class DOMNumber extends DOMInput implements SNumber {
+    constructor(setting: Setting, section: string) { super("number", setting, section); }
+    type: string = "number";
+    get value(): number { return +this._input.value; }
+    set value(v: number) { this._input.value = ""+v; }
+}
+
+interface SBool extends Setting {
+    value: boolean;
+}
+class DOMBool implements SBool {
+    protected _input: HTMLInputElement;
+    private _container: HTMLDivElement;
+    private _tooltip: HTMLDivElement;
+    private _required: HTMLSpanElement;
+    private _restart: HTMLSpanElement;
+    type: string = "bool";
+
+    get name(): string { return this._container.querySelector("span.setting-label").textContent; }
+    set name(n: string) { this._container.querySelector("span.setting-label").textContent = n; }
+
+    get description(): string { return this._tooltip.querySelector("span.content").textContent; } 
+    set description(d: string) {
+        const content = this._tooltip.querySelector("span.content") as HTMLSpanElement;
+        content.textContent = d;
+        if (d == "") {
+            this._tooltip.classList.add("unfocused");
+        } else {
+            this._tooltip.classList.remove("unfocused");
+        }
+    }
+
+    get required(): boolean { return this._required.classList.contains("badge"); }
+    set required(state: boolean) {
+        if (state) {
+            this._required.classList.add("badge", "~critical");
+            this._required.textContent = "*";
+        } else {
+            this._required.classList.remove("badge", "~critical");
+            this._required.textContent = "";
+        }
+    }
+    
+    get requires_restart(): boolean { return this._restart.classList.contains("badge"); }
+    set requires_restart(state: boolean) {
+        if (state) {
+            this._restart.classList.add("badge", "~critical");
+            this._restart.textContent = "R";
+        } else {
+            this._restart.classList.remove("badge", "~critical");
+            this._restart.textContent = "";
+        }
+    }
+    get value(): boolean { return this._input.checked; }
+    set value(state: boolean) { this._input.checked = state; }
+    constructor(setting: SBool, section: string, name: string) {
+        this._container = document.createElement("div");
+        this._container.classList.add("setting");
+        this._container.innerHTML = `
+        <label class="switch">
+            <input type="checkbox">
+            <span class="setting-label"></span> <span class="setting-required"></span> <span class="setting-restart"></span>
+            <div class="setting-tooltip tooltip right unfocused">
+                <i class="icon ri-information-line"></i>
+                <span class="content sm"></span>
+            </div>
+        </label>
+        `;
+        this._tooltip = this._container.querySelector("div.setting-tooltip") as HTMLDivElement;
+        this._required = this._container.querySelector("span.setting-required") as HTMLSpanElement;
+        this._restart = this._container.querySelector("span.setting-restart") as HTMLSpanElement;
+        this._input = this._container.querySelector("input[type=checkbox]") as HTMLInputElement;
+        const onValueChange = () => {
+            const event = new CustomEvent(`settings-${section}-${name}`, { "detail": this._input.checked })
+            document.dispatchEvent(event);
+        };
+        this._input.onchange = onValueChange;
+        document.addEventListener(`settings-loaded`, onValueChange);
+
+        if (setting.depends_false || setting.depends_true) {
+            let dependant = setting.depends_true || setting.depends_false;
+            let state = true;
+            if (setting.depends_false) { state = false; }
+            document.addEventListener(`settings-${section}-${dependant}`, (event: settingsBoolEvent) => {
+                this._input.disabled = (event.detail !== state);
+            });
+        }
+        this.update(setting);
+    }
+    update = (s: SBool) => {
+        this.name = s.name;
+        this.description = s.description;
+        this.required = s.required;
+        this.requires_restart = s.requires_restart;
+        this.value = s.value;
+    }
+    
+    asElement = (): HTMLDivElement => { return this._container; }
+}
+
+interface SSelect extends Setting {
+    options: string[];
+    value: string;
+}
+class DOMSelect implements SSelect {
+    protected _select: HTMLSelectElement;
+    private _container: HTMLDivElement;
+    private _tooltip: HTMLDivElement;
+    private _required: HTMLSpanElement;
+    private _restart: HTMLSpanElement;
+    private _options: string[];
+    type: string = "bool";
+
+    get name(): string { return this._container.querySelector("span.setting-label").textContent; }
+    set name(n: string) { this._container.querySelector("span.setting-label").textContent = n; }
+
+    get description(): string { return this._tooltip.querySelector("span.content").textContent; } 
+    set description(d: string) {
+        const content = this._tooltip.querySelector("span.content") as HTMLSpanElement;
+        content.textContent = d;
+        if (d == "") {
+            this._tooltip.classList.add("unfocused");
+        } else {
+            this._tooltip.classList.remove("unfocused");
+        }
+    }
+
+    get required(): boolean { return this._required.classList.contains("badge"); }
+    set required(state: boolean) {
+        if (state) {
+            this._required.classList.add("badge", "~critical");
+            this._required.textContent = "*";
+        } else {
+            this._required.classList.remove("badge", "~critical");
+            this._required.textContent = "";
+        }
+    }
+    
+    get requires_restart(): boolean { return this._restart.classList.contains("badge"); }
+    set requires_restart(state: boolean) {
+        if (state) {
+            this._restart.classList.add("badge", "~critical");
+            this._restart.textContent = "R";
+        } else {
+            this._restart.classList.remove("badge", "~critical");
+            this._restart.textContent = "";
+        }
+    }
+    get value(): string { return this._select.value; }
+    set value(v: string) { this._select.value = v; }
+
+    get options(): string[] { return this._options; }
+    set options(opt: string[]) {
+        this._options = opt;
+        let innerHTML = "";
+        for (let option of this._options) {
+            innerHTML += `<option value="${option}">${option}</option>`;
+        }
+        this._select.innerHTML = innerHTML;
+    }
+
+    constructor(setting: SSelect, section: string) {
+        this._options = [];
+        this._container = document.createElement("div");
+        this._container.classList.add("setting");
+        this._container.innerHTML = `
+        <label class="label">
+            <span class="setting-label"></span> <span class="setting-required"></span> <span class="setting-restart"></span>
+            <div class="setting-tooltip tooltip right unfocused">
+                <i class="icon ri-information-line"></i>
+                <span class="content sm"></span>
+            </div>
+            <div class="select ~neutral !normal mt-half">
+                <select class="settings-select"></select>
+            </div>
+        </label>
+        `;
+        this._tooltip = this._container.querySelector("div.setting-tooltip") as HTMLDivElement;
+        this._required = this._container.querySelector("span.setting-required") as HTMLSpanElement;
+        this._restart = this._container.querySelector("span.setting-restart") as HTMLSpanElement;
+        this._select = this._container.querySelector("select.settings-select") as HTMLSelectElement;
+        if (setting.depends_false || setting.depends_true) {
+            let dependant = setting.depends_true || setting.depends_false;
+            let state = true;
+            if (setting.depends_false) { state = false; }
+            document.addEventListener(`settings-${section}-${dependant}`, (event: settingsBoolEvent) => {
+                this._input.disabled = (event.detail !== state);
+            });
+        }
+        this.update(setting);
+    }
+    update = (s: SSelect) => {
+        this.name = s.name;
+        this.description = s.description;
+        this.required = s.required;
+        this.requires_restart = s.requires_restart;
+        this.options = s.options;
+        this.value = s.value;
+    }
+
+    asElement = (): HTMLDivElement => { return this._container; }
+}
+
+interface Section {
+    meta: Meta;
+    order: string[];
+    settings: { [settingName: string]: Setting };
+}
+
+class sectionPanel {
+    private _section: HTMLDivElement;
+    private _settings: { [name: string]: Setting };
+    private _sectionName: string;
+
+    constructor(s: Section, sectionName: string) {
+        this._sectionName = sectionName;
+        this._settings = {};
+        this._section = document.createElement("div") as HTMLDivElement;
+        this._section.classList.add("settings-section", "unfocused");
+        this._section.innerHTML = `<p class="support lg mb-half">${s.meta.description}</p>`;
+        this.update(s);
+
+    }
+    update = (s: Section) => {
+        for (let name of s.order) {
+            let setting: Setting = s.settings[name];
+            if (name in this._settings) {
+                this._settings[name].update(setting);
+            } else {
+                switch (setting.type) {
+                    case "text":
+                        setting = new DOMText(setting, this._sectionName);
+                        break;
+                    case "password":
+                        setting = new DOMPassword(setting, this._sectionName);
+                        break;
+                    case "email":
+                        setting = new DOMEmail(setting, this._sectionName);
+                        break;
+                    case "number":
+                        setting = new DOMNumber(setting, this._sectionName);
+                        break;
+                    case "bool":
+                        setting = new DOMBool(setting as SBool, this._sectionName, name);
+                        break;
+                    case "select":
+                        setting = new DOMSelect(setting as SSelect, this._sectionName);
+                        break;
+                }
+                this._section.appendChild(setting.asElement());
+                this._settings[name] = setting;
+            }
+        }
+    }
+    
+    get visible(): boolean { return !this._section.classList.contains("unfocused"); }
+    set visible(s: boolean) {
+        if (s) {
+            this._section.classList.remove("unfocused");
+        } else {
+            this._section.classList.add("unfocused");
+        }
+    }
+
+    asElement = (): HTMLDivElement => { return this._section; }
+}
+
+        
+
+interface Settings {
+    order: string[];
+    sections: { [sectionName: string]: Section };
+}
+
+export class settingsList {
+    private _panel = document.getElementById("settings-panel") as HTMLDivElement;
+    private _sidebar = document.getElementById("settings-sidebar") as HTMLDivElement;
+    private _sections: { [name: string]: sectionPanel }
+    private _buttons: { [name: string]: HTMLSpanElement }
+
+    addSection = (name: string, s: Section) => {
+        const section = new sectionPanel(s, name);
+        this._sections[name] = section;
+        this._panel.appendChild(this._sections[name].asElement());
+        const button = document.createElement("span") as HTMLSpanElement;
+        button.classList.add("button", "~neutral", "!low", "settings-section-button", "mb-half");
+        button.textContent = s.meta.name;
+        button.onclick = () => { this._showPanel(name); };
+        this._buttons[name] = button;
+        this._sidebar.appendChild(this._buttons[name]);
+    }
+
+    private _showPanel = (name: string) => {
+        for (let n in this._sections) {
+            if (n == name) {
+                console.log("found", n);
+                this._sections[name].visible = true;
+                this._buttons[name].classList.add("selected");
+            } else {
+                this._sections[n].visible = false;
+                this._buttons[n].classList.remove("selected");
+            }
+        }
+    }
+
+    constructor() {
+        this._sections = {};
+        this._buttons = {};
+    }
+
+    reload = () => _get("/config", null, (req: XMLHttpRequest) => {
+        if (req.readyState == 4) {
+            if (req.status != 200) {
+                window.notifications.customError("settingsLoadError", "Failed to load settings.");
+                return;
+            }
+            let settings = req.response as Settings;
+            for (let name of settings.order) {
+                if (name in this._sections) {
+                    this._sections[name].update(settings.sections[name]);
+                } else {
+                    this.addSection(name, settings.sections[name]);
+                }
+            }
+            document.dispatchEvent(new CustomEvent("settings-loaded"));
+        }
+    })
+
+}

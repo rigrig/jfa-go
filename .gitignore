@@ -5,4 +5,5 @@ build/
 version.go
 notes
 docs/*
+config-payload.json
 !docs/go.mod

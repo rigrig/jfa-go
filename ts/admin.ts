@@ -3,6 +3,7 @@ import { Modal } from "./modules/modal.js";
 import { Tabs } from "./modules/tabs.js";
 import { inviteList, createInvite } from "./modules/invites.js";
 import { accountsList } from "./modules/accounts.js";
+import { settingsList } from "./modules/settings.js";
 import { _post, notificationBox, whichAnimationEvent, toggleLoader } from "./modules/common.js";
 
 loadTheme();
@@ -42,6 +43,8 @@ var accounts = new accountsList();
 
 window.invites = new inviteList();
 
+var settings = new settingsList();
+
 window.notifications = new notificationBox(document.getElementById('notification-box') as HTMLDivElement, 5);
 
 /*const modifySettingsSource = function () {
@@ -59,10 +62,9 @@ window.notifications = new notificationBox(document.getElementById('notification
 
 // load tabs
 window.tabs = new Tabs();
-for (let tabID of ["invitesTab", "settingsTab"]) {
-    window.tabs.addTab(tabID);
-}
+window.tabs.addTab("invitesTab");
 window.tabs.addTab("accountsTab", null, accounts.reload);
+window.tabs.addTab("settingsTab", null, settings.reload);
 
 function login(username: string, password: string, run?: (state?: number) => void) {
     const req = new XMLHttpRequest();

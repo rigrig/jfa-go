@@ -196,6 +196,11 @@ sup.\~critical, .text-critical {
     align-items: center;
 }
 
+.inv-empty .inv-codearea {
+    justify-content: start;
+}
+
+
 .invite-link {
     text-overflow: ellipsis;
     overflow: hidden;
