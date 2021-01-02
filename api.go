@@ -1072,13 +1072,14 @@ func (app *appContext) ApplySettings(gc *gin.Context) {
 
 // @Summary Get jfa-go configuration.
 // @Produce json
-// @Success 200 {object} configDTO "Uses the same format as config-base.json"
+// @Success 200 {object} settings "Uses the same format as config-base.json"
 // @Router /config [get]
 // @Security Bearer
 // @tags Configuration
 func (app *appContext) GetConfig(gc *gin.Context) {
 	app.info.Println("Config requested")
-	resp := map[string]interface{}{}
+	resp := app.configBase
+	// Load language options
 	langPath := filepath.Join(app.localPath, "lang", "form")
 	app.lang.langFiles, _ = ioutil.ReadDir(langPath)
 	app.lang.langOptions = make([]string, len(app.lang.langFiles))
@@ -1095,37 +1096,25 @@ func (app *appContext) GetConfig(gc *gin.Context) {
 			app.lang.langOptions[i] = meta.(map[string]interface{})["name"].(string)
 		}
 	}
-	for section, settings := range app.configBase {
-		if section == "order" {
-			resp[section] = settings.([]interface{})
-		} else {
-			resp[section] = make(map[string]interface{})
-			for key, values := range settings.(map[string]interface{}) {
-				if key == "order" {
-					resp[section].(map[string]interface{})[key] = values.([]interface{})
-				} else {
-					resp[section].(map[string]interface{})[key] = values.(map[string]interface{})
-					if key != "meta" {
-						dataType := resp[section].(map[string]interface{})[key].(map[string]interface{})["type"].(string)
-						configKey := app.config.Section(section).Key(key)
-						if dataType == "number" {
-							if val, err := configKey.Int(); err == nil {
-								resp[section].(map[string]interface{})[key].(map[string]interface{})["value"] = val
-							}
-						} else if dataType == "bool" {
-							resp[section].(map[string]interface{})[key].(map[string]interface{})["value"] = configKey.MustBool(false)
-						} else if dataType == "select" && key == "language" {
-							resp[section].(map[string]interface{})[key].(map[string]interface{})["options"] = app.lang.langOptions
-							resp[section].(map[string]interface{})[key].(map[string]interface{})["value"] = app.lang.langOptions[app.lang.chosenIndex]
-						} else {
-							resp[section].(map[string]interface{})[key].(map[string]interface{})["value"] = configKey.String()
-						}
-					}
-				}
+	s := resp.Sections["ui"].Settings["language"]
+	s.Options = app.lang.langOptions
+	s.Value = app.lang.langOptions[app.lang.chosenIndex]
+	resp.Sections["ui"].Settings["language"] = s
+	for sectName, section := range resp.Sections {
+		for settingName, setting := range section.Settings {
+			val := app.config.Section(sectName).Key(settingName)
+			s := resp.Sections[sectName].Settings[settingName]
+			switch setting.Type {
+			case "text", "email", "select":
+				s.Value = val.MustString("")
+			case "number":
+				s.Value = val.MustInt(0)
+			case "bool":
+				s.Value = val.MustBool(false)
 			}
+			resp.Sections[sectName].Settings[settingName] = s
 		}
 	}
-	// resp["jellyfin"].(map[string]interface{})["language"].(map[string]interface{})["options"].([]string)
 	gc.JSON(200, resp)
 }
 

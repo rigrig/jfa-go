@@ -48,7 +48,7 @@ type appContext struct {
 	config           *ini.File
 	configPath       string
 	configBasePath   string
-	configBase       map[string]interface{}
+	configBase       settings
 	dataPath         string
 	localPath        string
 	cssFile          string
