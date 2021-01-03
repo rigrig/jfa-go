@@ -5,8 +5,12 @@ export function toggleTheme() {
 }
 
 export function loadTheme() {
-    if (localStorage.getItem('theme') == "dark") {
+    const theme = localStorage.getItem("theme");
+    if (theme == "dark") {
         document.documentElement.classList.add('dark-theme');
         document.documentElement.classList.remove('light-theme');
+    } else if (theme == "light") {
+        document.documentElement.classList.add('light-theme');
+        document.documentElement.classList.remove('dark-theme');
     }
 }

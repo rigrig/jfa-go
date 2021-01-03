@@ -51,8 +51,7 @@ type appContext struct {
 	configBase       settings
 	dataPath         string
 	localPath        string
-	cssFile          string
-	bsVersion        int
+	cssClass         string
 	jellyfinLogin    bool
 	users            []User
 	invalidTokens    []string
@@ -362,14 +361,6 @@ func start(asDaemon, firstCall bool) {
 
 		app.debug.Printf("Loaded config file \"%s\"", app.configPath)
 
-		if app.config.Section("ui").Key("bs5").MustBool(false) {
-			app.cssFile = "bs5-jf.css"
-			app.bsVersion = 5
-		} else {
-			app.cssFile = "bs4-jf.css"
-			app.bsVersion = 4
-		}
-
 		app.debug.Println("Loading storage")
 
 		app.storage.invite_path = app.config.Section("files").Key("invites").String()
@@ -420,14 +411,15 @@ func start(asDaemon, firstCall bool) {
 		json.Unmarshal(configBase, &app.configBase)
 
 		themes := map[string]string{
-			"Jellyfin (Dark)":   fmt.Sprintf("bs%d-jf.css", app.bsVersion),
-			"Bootstrap (Light)": fmt.Sprintf("bs%d.css", app.bsVersion),
-			"Custom CSS":        "",
+			"Jellyfin (Dark)": "dark-theme",
+			"Default (Light)": "light-theme",
+		}
+		if app.config.Section("ui").Key("theme").String() == "Bootstrap (Light)" {
+			app.config.Section("ui").Key("theme").SetValue("Default (Light)")
 		}
 		if val, ok := themes[app.config.Section("ui").Key("theme").String()]; ok {
-			app.cssFile = val
+			app.cssClass = val
 		}
-		app.debug.Printf("Using css file \"%s\"", app.cssFile)
 		secret, err := generateSecret(16)
 		if err != nil {
 			app.err.Fatal(err)
