@@ -1,4 +1,4 @@
-import { _get } from "../modules/common.js";
+import { _get, _post, toggleLoader } from "../modules/common.js";
 
 interface settingsBoolEvent extends Event { 
     detail: boolean;
@@ -64,15 +64,15 @@ class DOMInput {
     get requires_restart(): boolean { return this._restart.classList.contains("badge"); }
     set requires_restart(state: boolean) {
         if (state) {
-            this._restart.classList.add("badge", "~critical");
+            this._restart.classList.add("badge", "~info");
             this._restart.textContent = "R";
         } else {
-            this._restart.classList.remove("badge", "~critical");
+            this._restart.classList.remove("badge", "~info");
             this._restart.textContent = "";
         }
     }
 
-    constructor(inputType: string, setting: Setting, section: string) {
+    constructor(inputType: string, setting: Setting, section: string, name: string) {
         this._container = document.createElement("div");
         this._container.classList.add("setting");
         this._container.innerHTML = `
@@ -97,6 +97,12 @@ class DOMInput {
                 this._input.disabled = (event.detail !== state);
             });
         }
+        const onValueChange = () => {
+            const event = new CustomEvent(`settings-${section}-${name}`, { "detail": this.value })
+            document.dispatchEvent(event);
+            if (this.requires_restart) { document.dispatchEvent(new CustomEvent("settings-requires-restart")); }
+        };
+        this._input.onchange = onValueChange;
         this.update(setting);
     }
 
@@ -118,7 +124,7 @@ interface SText extends Setting {
     value: string;
 }
 class DOMText extends DOMInput implements SText {
-    constructor(setting: Setting, section: string) { super("text", setting, section); }
+    constructor(setting: Setting, section: string, name: string) { super("text", setting, section, name); }
     type: string = "text";
     get value(): string { return this._input.value }
     set value(v: string) { this._input.value = v; }
@@ -128,7 +134,7 @@ interface SPassword extends Setting {
     value: string;
 }
 class DOMPassword extends DOMInput implements SPassword {
-    constructor(setting: Setting, section: string) { super("password", setting, section); }
+    constructor(setting: Setting, section: string, name: string) { super("password", setting, section, name); }
     type: string = "password";
     get value(): string { return this._input.value }
     set value(v: string) { this._input.value = v; }
@@ -138,7 +144,7 @@ interface SEmail extends Setting {
     value: string;
 }
 class DOMEmail extends DOMInput implements SEmail {
-    constructor(setting: Setting, section: string) { super("email", setting, section); }
+    constructor(setting: Setting, section: string, name: string) { super("email", setting, section, name); }
     type: string = "email";
     get value(): string { return this._input.value }
     set value(v: string) { this._input.value = v; }
@@ -148,7 +154,7 @@ interface SNumber extends Setting {
     value: number;
 }
 class DOMNumber extends DOMInput implements SNumber {
-    constructor(setting: Setting, section: string) { super("number", setting, section); }
+    constructor(setting: Setting, section: string, name: string) { super("number", setting, section, name); }
     type: string = "number";
     get value(): number { return +this._input.value; }
     set value(v: number) { this._input.value = ""+v; }
@@ -193,10 +199,10 @@ class DOMBool implements SBool {
     get requires_restart(): boolean { return this._restart.classList.contains("badge"); }
     set requires_restart(state: boolean) {
         if (state) {
-            this._restart.classList.add("badge", "~critical");
+            this._restart.classList.add("badge", "~info");
             this._restart.textContent = "R";
         } else {
-            this._restart.classList.remove("badge", "~critical");
+            this._restart.classList.remove("badge", "~info");
             this._restart.textContent = "";
         }
     }
@@ -220,10 +226,13 @@ class DOMBool implements SBool {
         this._restart = this._container.querySelector("span.setting-restart") as HTMLSpanElement;
         this._input = this._container.querySelector("input[type=checkbox]") as HTMLInputElement;
         const onValueChange = () => {
-            const event = new CustomEvent(`settings-${section}-${name}`, { "detail": this._input.checked })
+            const event = new CustomEvent(`settings-${section}-${name}`, { "detail": this.value })
             document.dispatchEvent(event);
         };
-        this._input.onchange = onValueChange;
+        this._input.onchange = () => { 
+            onValueChange();
+            if (this.requires_restart) { document.dispatchEvent(new CustomEvent("settings-requires-restart")); }
+        };
         document.addEventListener(`settings-loaded`, onValueChange);
 
         if (setting.depends_false || setting.depends_true) {
@@ -288,10 +297,10 @@ class DOMSelect implements SSelect {
     get requires_restart(): boolean { return this._restart.classList.contains("badge"); }
     set requires_restart(state: boolean) {
         if (state) {
-            this._restart.classList.add("badge", "~critical");
+            this._restart.classList.add("badge", "~info");
             this._restart.textContent = "R";
         } else {
-            this._restart.classList.remove("badge", "~critical");
+            this._restart.classList.remove("badge", "~info");
             this._restart.textContent = "";
         }
     }
@@ -308,7 +317,7 @@ class DOMSelect implements SSelect {
         this._select.innerHTML = innerHTML;
     }
 
-    constructor(setting: SSelect, section: string) {
+    constructor(setting: SSelect, section: string, name: string) {
         this._options = [];
         this._container = document.createElement("div");
         this._container.classList.add("setting");
@@ -336,6 +345,12 @@ class DOMSelect implements SSelect {
                 this._input.disabled = (event.detail !== state);
             });
         }
+        const onValueChange = () => {
+            const event = new CustomEvent(`settings-${section}-${name}`, { "detail": this.value })
+            document.dispatchEvent(event);
+            if (this.requires_restart) { document.dispatchEvent(new CustomEvent("settings-requires-restart")); }
+        };
+        this._select.onchange = onValueChange;
         this.update(setting);
     }
     update = (s: SSelect) => {
@@ -360,15 +375,18 @@ class sectionPanel {
     private _section: HTMLDivElement;
     private _settings: { [name: string]: Setting };
     private _sectionName: string;
+    values: { [field: string]: string } = {};
 
     constructor(s: Section, sectionName: string) {
         this._sectionName = sectionName;
         this._settings = {};
         this._section = document.createElement("div") as HTMLDivElement;
         this._section.classList.add("settings-section", "unfocused");
-        this._section.innerHTML = `<p class="support lg mb-half">${s.meta.description}</p>`;
+        this._section.innerHTML = `
+        <span class="heading">${s.meta.name}</span>
+        <p class="support lg">${s.meta.description}</p>
+        `;
         this.update(s);
-
     }
     update = (s: Section) => {
         for (let name of s.order) {
@@ -378,24 +396,30 @@ class sectionPanel {
             } else {
                 switch (setting.type) {
                     case "text":
-                        setting = new DOMText(setting, this._sectionName);
+                        setting = new DOMText(setting, this._sectionName, name);
                         break;
                     case "password":
-                        setting = new DOMPassword(setting, this._sectionName);
+                        setting = new DOMPassword(setting, this._sectionName, name);
                         break;
                     case "email":
-                        setting = new DOMEmail(setting, this._sectionName);
+                        setting = new DOMEmail(setting, this._sectionName, name);
                         break;
                     case "number":
-                        setting = new DOMNumber(setting, this._sectionName);
+                        setting = new DOMNumber(setting, this._sectionName, name);
                         break;
                     case "bool":
                         setting = new DOMBool(setting as SBool, this._sectionName, name);
                         break;
                     case "select":
-                        setting = new DOMSelect(setting as SSelect, this._sectionName);
+                        setting = new DOMSelect(setting as SSelect, this._sectionName, name);
                         break;
                 }
+                this.values[name] = ""+setting.value;
+                document.addEventListener(`settings-${this._sectionName}-${name}`, (event: CustomEvent) => {
+                    const oldValue = this.values[name];
+                    this.values[name] = ""+event.detail;
+                    document.dispatchEvent(new CustomEvent("settings-section-changed"));
+                });
                 this._section.appendChild(setting.asElement());
                 this._settings[name] = setting;
             }
@@ -422,10 +446,15 @@ interface Settings {
 }
 
 export class settingsList {
+    private _saveButton = document.getElementById("settings-save") as HTMLSpanElement;
+    private _saveNoRestart = document.getElementById("settings-apply-no-restart") as HTMLSpanElement;
+    private _saveRestart = document.getElementById("settings-apply-restart") as HTMLSpanElement;
+
     private _panel = document.getElementById("settings-panel") as HTMLDivElement;
     private _sidebar = document.getElementById("settings-sidebar") as HTMLDivElement;
     private _sections: { [name: string]: sectionPanel }
     private _buttons: { [name: string]: HTMLSpanElement }
+    private _needsRestart: boolean = false;
 
     addSection = (name: string, s: Section) => {
         const section = new sectionPanel(s, name);
@@ -442,7 +471,6 @@ export class settingsList {
     private _showPanel = (name: string) => {
         for (let n in this._sections) {
             if (n == name) {
-                console.log("found", n);
                 this._sections[name].visible = true;
                 this._buttons[name].classList.add("selected");
             } else {
@@ -452,9 +480,53 @@ export class settingsList {
         }
     }
 
+    private _save = () => {
+        let config = {};
+        for (let name in this._sections) {
+            config[name] = this._sections[name].values;
+        }
+        if (this._needsRestart) { 
+            this._saveRestart.onclick = () => {
+                config["restart-program"] = true;
+                this._send(config, () => {
+                    window.modals.settingsRestart.close(); 
+                    window.modals.settingsRefresh.show();
+                });
+            };
+            this._saveNoRestart.onclick = () => {
+                config["restart-program"] = false;
+                this._send(config, window.modals.settingsRestart.close); 
+            }
+            window.modals.settingsRestart.show(); 
+        } else {
+            this._send(config);
+        }
+        // console.log(config);
+    }
+
+    private _send = (config: Object, run?: () => void) => _post("/config", config, (req: XMLHttpRequest) => {
+        if (req.readyState == 4) {
+            if (req.status == 200 || req.status == 204) {
+                window.notifications.customPositive("settingsSaved", "Success:", "settings were saved.");
+            } else {
+                window.notifications.customError("settingsSaved", "Couldn't save settings.");
+            }
+            this.reload();
+            if (run) { run(); }
+        }
+    });
+
     constructor() {
         this._sections = {};
         this._buttons = {};
+        document.addEventListener("settings-section-changed", () => this._saveButton.classList.remove("unfocused"));
+        this._saveButton.onclick = this._save;
+        document.addEventListener("settings-requires-restart", () => { this._needsRestart = true; });
+
+        if (window.ombiEnabled) {
+            let ombi = new ombiDefaults();
+            this._sidebar.appendChild(ombi.button());
+        }
     }
 
     reload = () => _get("/config", null, (req: XMLHttpRequest) => {
@@ -471,8 +543,78 @@ export class settingsList {
                     this.addSection(name, settings.sections[name]);
                 }
             }
+            this._showPanel(settings.order[0]);
+            this._needsRestart = false;
             document.dispatchEvent(new CustomEvent("settings-loaded"));
+            this._saveButton.classList.add("unfocused");
         }
     })
-
 }
+
+interface ombiUser {
+    id: string;
+    name: string;
+}
+
+class ombiDefaults {
+    private _form: HTMLFormElement;
+    private _button: HTMLSpanElement;
+    private _select: HTMLSelectElement;
+    private _users: { [id: string]: string } = {};
+    constructor() {
+        this._button = document.createElement("span") as HTMLSpanElement;
+        this._button.classList.add("button", "~neutral", "!low", "settings-section-button", "mb-half");
+        this._button.innerHTML = `<span class="flex">Ombi user defaults <i class="ri-link-unlink-m ml-half"></i></span>`;
+        this._button.onclick = this.load;
+        this._form = document.getElementById("form-ombi-defaults") as HTMLFormElement;
+        this._form.onsubmit = this.send;
+        this._select = this._form.querySelector("select") as HTMLSelectElement;
+    }
+    button = (): HTMLSpanElement => { return this._button; }
+    send = () => {
+        const button = this._form.querySelector("span.submit") as HTMLSpanElement;
+        toggleLoader(button);
+        let resp = {} as ombiUser;
+        resp.id = this._select.value;
+        resp.name = this._users[resp.id];
+        _post("/ombi/defaults", resp, (req: XMLHttpRequest) => {
+            if (req.readyState == 4) {
+                toggleLoader(button);
+                if (req.status == 200 || req.status == 204) {
+                    window.notifications.customPositive("ombiDefaults", "Success:", "stored ombi defaults.");
+                } else {
+                    window.notifications.customError("ombiDefaults", "Failed to store ombi defaults.");
+                }
+                window.modals.ombiDefaults.close();
+            }
+        });
+    }
+
+    load = () => {
+        toggleLoader(this._button);
+        _get("/ombi/users", null, (req: XMLHttpRequest) => {
+            if (req.readyState == 4) {
+                if (req.status == 200 && "users" in req.response) {
+                    const users = req.response["users"] as ombiUser[]; 
+                    let innerHTML = "";
+                    for (let user of users) {
+                        this._users[user.id] = user.name;
+                        innerHTML += `<option value="${user.id}">${user.name}</option>`;
+                    }
+                    this._select.innerHTML = innerHTML;
+                    toggleLoader(this._button);
+                    window.modals.ombiDefaults.show();
+                } else {
+                    toggleLoader(this._button);
+                    window.notifications.customError("ombiLoadError", "Failed to load ombi users.")
+                }
+            }
+        });
+    }
+}
+
+
+
+
+
+

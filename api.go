@@ -1097,15 +1097,12 @@ func (app *appContext) GetConfig(gc *gin.Context) {
 		}
 	}
 	s := resp.Sections["ui"].Settings["language"]
-	s.Options = app.lang.langOptions
-	s.Value = app.lang.langOptions[app.lang.chosenIndex]
-	resp.Sections["ui"].Settings["language"] = s
 	for sectName, section := range resp.Sections {
 		for settingName, setting := range section.Settings {
 			val := app.config.Section(sectName).Key(settingName)
 			s := resp.Sections[sectName].Settings[settingName]
 			switch setting.Type {
-			case "text", "email", "select":
+			case "text", "email", "select", "password":
 				s.Value = val.MustString("")
 			case "number":
 				s.Value = val.MustInt(0)
@@ -1115,6 +1112,9 @@ func (app *appContext) GetConfig(gc *gin.Context) {
 			resp.Sections[sectName].Settings[settingName] = s
 		}
 	}
+	s.Options = app.lang.langOptions
+	s.Value = app.lang.langOptions[app.lang.chosenIndex]
+	resp.Sections["ui"].Settings["language"] = s
 	gc.JSON(200, resp)
 }
 

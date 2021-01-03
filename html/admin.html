@@ -101,17 +101,17 @@
             </form>
         </div>
         <div id="modal-restart" class="modal">
-            <div class="modal-content card ~critical !normal">
+            <div class="modal-content card ~critical !low">
                 <span class="heading">Restart needed <span class="modal-close">&times;</span></span>
                 <p class="content pb-1">A restart is needed to apply some settings you changed. Do it now or later?</p>
                 <div class="fr">
-                    <span class="button ~info !normal">Apply, restart later</span>
-                    <span class="button ~critical !normal">Apply &amp; restart</span>
+                    <span class="button ~info !normal" id="settings-apply-no-restart">Apply, restart later</span>
+                    <span class="button ~critical !normal" id="settings-apply-restart">Apply &amp; restart</span>
                 </div>
             </div>
         </div>
         <div id="modal-refresh" class="modal">
-            <div class="modal-content card ~urge !normal">
+            <div class="modal-content card ~neutral !normal">
                 <span class="heading">Settings applied.</span>
                 <p class="content">Refresh the page in a few seconds.</p>
             </div>
@@ -230,17 +230,17 @@
                 </div>
             </div>
             <div id="settingsTab" class="unfocused">
-                <div class="card ~neutral !low settings">
+                <div class="card ~neutral !low settings overflow">
                     <span class="heading">Settings</span>
                     <div class="fr">
-                        <span class="button ~neutral !normal" id="accounts-add-user">Save</span>
+                        <span class="button ~neutral !normal unfocused" id="settings-save">Save</span>
                     </div>
                     <div class="row">
                         <div class="card ~neutral !normal col" id="settings-sidebar">
-                            <aside class="aside sm ~info mb-half">Note: <span class="badge ~critical">*</span> indicates a required field, <span class="badge ~critical">R</span> indicates changes require a restart.</aside> 
-                            <span class="button ~neutral !low settings-section-button mb-half" id="setting-about">About</span>
+                            <aside class="aside sm ~info mb-half">Note: <span class="badge ~critical">*</span> indicates a required field, <span class="badge ~info">R</span> indicates changes require a restart.</aside> 
+                            <span class="button ~neutral !low settings-section-button mb-half" id="setting-about"><span class="flex">About <i class="ri-information-line ml-half"></i></span></span>
                         </div>
-                        <div class="card ~neutral !normal col" id="settings-panel"></div>
+                        <div class="card ~neutral !normal col overflow" id="settings-panel"></div>
                     </div>
                 </div>
             </div>

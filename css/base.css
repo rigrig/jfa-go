@@ -68,6 +68,10 @@
     margin-left: 1rem;
 }
 
+.ml-half {
+    margin-left: 0.5rem;
+}
+
 .mr-1 {
     margin-right: 1rem;
 }
@@ -94,6 +98,10 @@
 
 .align-top {
     align-items: top;
+}
+
+.flex {
+    display: flex;
 }
 
 .flex-expand {
