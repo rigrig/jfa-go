@@ -53,8 +53,7 @@ func (app *appContext) InviteProxy(gc *gin.Context) {
 		})
 	} else {
 		gcHTML(gc, 404, "invalidCode.html", gin.H{
-			"bs5":            app.config.Section("ui").Key("bs5").MustBool(false),
-			"cssFile":        app.cssClass,
+			"cssClass":       app.cssClass,
 			"contactMessage": app.config.Section("ui").Key("contact_message").String(),
 		})
 	}
@@ -62,8 +61,7 @@ func (app *appContext) InviteProxy(gc *gin.Context) {
 
 func (app *appContext) NoRouteHandler(gc *gin.Context) {
 	gcHTML(gc, 404, "404.html", gin.H{
-		"bs5":            app.config.Section("ui").Key("bs5").MustBool(false),
-		"cssFile":        app.cssClass,
+		"cssClass":       app.cssClass,
 		"contactMessage": app.config.Section("ui").Key("contact_message").String(),
 	})
 }
