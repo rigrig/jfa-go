@@ -173,6 +173,6 @@ if (!window.validationStrings) {
         const el = document.getElementById("requirement-" + category);
         if (el) {
             requirements[category] = new Requirement(category, el as HTMLLIElement);
-        } else { console.log(category); }
+        }
     }
 }
