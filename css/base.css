@@ -343,7 +343,7 @@ sup.\~critical, .text-critical {
     overflow-y: visible;
 }
 
-select {
+select, textarea {
     color: inherit;
     border: 0 solid var(--color-neutral-300);
     appearance: none;
