@@ -4,6 +4,7 @@ import { Tabs } from "./modules/tabs.js";
 import { inviteList, createInvite } from "./modules/invites.js";
 import { accountsList } from "./modules/accounts.js";
 import { settingsList } from "./modules/settings.js";
+import { ProfileEditor } from "./modules/profiles.js";
 import { _post, notificationBox, whichAnimationEvent, toggleLoader } from "./modules/common.js";
 
 loadTheme();
@@ -36,6 +37,10 @@ window.availableProfiles = window.availableProfiles || [];
 
     window.modals.ombiDefaults = new Modal(document.getElementById('modal-ombi-defaults'));
     document.getElementById('form-ombi-defaults').addEventListener('submit', window.modals.ombiDefaults.close);
+
+    window.modals.profiles = new Modal(document.getElementById("modal-user-profiles"));
+
+    window.modals.addProfile = new Modal(document.getElementById("modal-add-profile"));
 })();
 
 var inviteCreator = new createInvite();
@@ -44,6 +49,8 @@ var accounts = new accountsList();
 window.invites = new inviteList();
 
 var settings = new settingsList();
+
+var profiles = new ProfileEditor();
 
 window.notifications = new notificationBox(document.getElementById('notification-box') as HTMLDivElement, 5);
 

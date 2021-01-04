@@ -4,12 +4,6 @@ interface settingsBoolEvent extends Event {
     detail: boolean;
 }
 
-interface Profile {
-    Admin: boolean;
-    LibraryAccess: string;
-    FromUser: string;
-}
-
 interface Meta {
     name: string;
     description: string;

@@ -216,6 +216,12 @@ sup.\~critical, .text-critical {
     width: auto;
 }
 
+.ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .no-pad {
     padding: 0px 0px 0px 0px;
 }

@@ -667,6 +667,9 @@ func (app *appContext) DeleteProfile(gc *gin.Context) {
 	gc.BindJSON(&req)
 	name := req.Name
 	if _, ok := app.storage.profiles[name]; ok {
+		if app.storage.defaultProfile == name {
+			app.storage.defaultProfile = ""
+		}
 		delete(app.storage.profiles, name)
 	}
 	app.storage.storeProfiles()

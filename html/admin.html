@@ -132,6 +132,51 @@
                 </label>
             </form>
         </div>
+        <div id="modal-user-profiles" class="modal">
+            <div class="modal-content wide card">
+                <span class="heading">User profiles <span class="modal-close">&times;</span></span>
+                <p class="support lg">Profiles are applied to users when they create an account. A profile includes library access rights and homescreen layout.</p>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Default</th>
+                                <th>From</th>
+                                <th>Libraries</th>
+                                <th><span class="button ~neutral !high" id="button-profile-create">Create</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-profiles">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="modal-add-profile" class="modal">
+            <form class="modal-content card" id="form-add-profile" href="">
+                <span class="heading">Add profile <span class="modal-close">&times;</span></span>
+                <p class="content">Create a Jellyfin user and configure it. Select it here, and when this profile is applied to an invite, new users will be created with its settings.</p>
+                <label>
+                    <span class="supra">Profile Name </span>
+                    <input type="text" class="field input ~neutral !high mt-half mb-1" placeholder="Name" id="add-profile-name">
+                <label>
+                    <span class="supra">User</span>
+                    <div class="select ~neutral !normal mt-half mb-1">
+                        <select id="add-profile-user">
+                        </select>
+                    </div>
+                </label>
+                <label class="switch mb-1">
+                    <input type="checkbox" id="add-profile-homescreen" checked>
+                    <span>Store homescreen layout</span>
+                </label>
+                <label>
+                    <input type="submit" class="unfocused">
+                    <span class="button ~urge !normal full-width center supra submit">Create</span>
+                </label>
+            </form>
+        </div>
         <div id="notification-box"></div>
         <div class="page-container max-w-screen-lg px-6 py-4 mx-auto lg:mx-auto md:py-8">
             <div class="mb-1">
@@ -239,6 +284,7 @@
                         <div class="card ~neutral !normal col" id="settings-sidebar">
                             <aside class="aside sm ~info mb-half">Note: <span class="badge ~critical">*</span> indicates a required field, <span class="badge ~info">R</span> indicates changes require a restart.</aside> 
                             <span class="button ~neutral !low settings-section-button mb-half" id="setting-about"><span class="flex">About <i class="ri-information-line ml-half"></i></span></span>
+                            <span class="button ~neutral !low settings-section-button mb-half" id="setting-profiles"><span class="flex">User profiles <i class="ri-user-line ml-half"></i></span></span>
                         </div>
                         <div class="card ~neutral !normal col overflow" id="settings-panel"></div>
                     </div>
