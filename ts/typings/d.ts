@@ -59,7 +59,6 @@ declare interface Modals {
     settingsRestart: Modal;
     settingsRefresh: Modal;
     ombiDefaults?: Modal;
-    newAccountSuccess?: Modal;
     profiles: Modal;
     addProfile: Modal;
 }
