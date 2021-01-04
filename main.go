@@ -560,6 +560,9 @@ func start(asDaemon, firstCall bool) {
 	}
 	if !firstRun {
 		router.GET("/", app.AdminPage)
+		router.GET("/accounts", app.AdminPage)
+		router.GET("/settings", app.AdminPage)
+
 		router.GET("/token/login", app.getTokenLogin)
 		router.GET("/token/refresh", app.getTokenRefresh)
 		router.POST("/newUser", app.NewUser)

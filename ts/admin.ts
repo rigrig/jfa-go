@@ -1,4 +1,4 @@
-import  { toggleTheme, loadTheme } from "./modules/theme.js";
+import { toggleTheme, loadTheme } from "./modules/theme.js";
 import { Modal } from "./modules/modal.js";
 import { Tabs } from "./modules/tabs.js";
 import { inviteList, createInvite } from "./modules/invites.js";
@@ -69,9 +69,29 @@ window.notifications = new notificationBox(document.getElementById('notification
 
 // load tabs
 window.tabs = new Tabs();
-window.tabs.addTab("invitesTab");
-window.tabs.addTab("accountsTab", null, accounts.reload);
-window.tabs.addTab("settingsTab", null, settings.reload);
+window.tabs.addTab("invites", null, window.invites.reload);
+window.tabs.addTab("accounts", null, accounts.reload);
+window.tabs.addTab("settings", null, settings.reload);
+
+for (let tab of ["invites", "accounts", "settings"]) {
+    if (window.location.pathname == "/" + tab) {
+        window.tabs.switch(tab, true);
+    }
+}
+
+if (window.location.pathname == "/") {
+    window.tabs.switch("invites", true);
+}
+
+document.addEventListener("tab-change", (event: CustomEvent) => {
+    let tab = "/" + event.detail;
+    if (tab == "/invites") {
+        if (window.location.pathname == "/") {
+            tab = "/";
+        } else { tab = "../"; }
+    }
+    window.history.replaceState("", "Admin - jfa-go", tab);
+});
 
 function login(username: string, password: string, run?: (state?: number) => void) {
     const req = new XMLHttpRequest();
@@ -106,9 +126,19 @@ function login(username: string, password: string, run?: (state?: number) => voi
                 const data = this.response;
                 window.token = data["token"];
                 window.modals.login.close();
-                window.invites.reload();
-                accounts.reload();
                 setInterval(() => { window.invites.reload(); accounts.reload(); }, 30*1000);
+                const currentTab = window.tabs.current;
+                switch (currentTab) {
+                    case "invites":
+                        window.invites.reload();
+                        break;
+                    case "accounts":
+                        accounts.reload();
+                        break;
+                    case "settings":
+                        settings.reload();
+                        break;
+                }
                 document.getElementById("logout-button").classList.remove("unfocused");
             }
             if (run) { run(+this.status); }

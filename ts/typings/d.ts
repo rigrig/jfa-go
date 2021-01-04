@@ -36,9 +36,10 @@ declare interface NotificationBox {
 }
 
 declare interface Tabs {
+    current: string;
     tabs: Array<Tab>;
     addTab: (tabID: string, preFunc?: () => void, postFunc?: () => void) => void;
-    switch: (tabID: string) => void;
+    switch: (tabID: string, noRun?: boolean) => void;
 }
 
 declare interface Tab {
