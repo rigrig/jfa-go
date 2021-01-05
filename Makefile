@@ -7,12 +7,12 @@ configuration:
 
 email:
 	$(info Generating email html)
-	python3 mail/generate.py
+	python3 mail/generate.py -o build/data/
 
 ts:
 	$(info compiling typescript)
 	-mkdir -p build/data/web/js
-	-npx esbuild ts/*.ts ts/modules/*.ts --sourcemap --outdir=./build/data/web/js/
+	-npx esbuild ts/*.ts ts/modules/*.ts --outdir=./build/data/web/js/
 
 ts-debug:
 	$(info compiling typescript w/ sourcemaps)

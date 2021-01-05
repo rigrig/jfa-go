@@ -1,7 +1,8 @@
 node_modules/
 mail/*.html
-dist/*
+dist/
 build/
+data/
 version.go
 notes
 docs/*
