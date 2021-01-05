@@ -11,13 +11,13 @@ before:
     - mkdir -p data
     - cp -r static data/web
     - cp -r css data/web/
+    - npm install
     - cp node_modules/a17t/dist/a17t.css data/web/css/
     - cp node_modules/remixicon/fonts/remixicon.css node_modules/remixicon/fonts/remixicon.woff2 data/web/css/
     - cp -r html data/
     - cp -r lang data/
     - python3 config/fixconfig.py -i config/config-base.json -o data/config-base.json
     - python3 config/generate_ini.py -i config/config-base.json -o data/config-default.ini
-    - npm install
     - python3 mail/generate.py -o data/
     - python3 version.py {{.Version}} version.go
     - bash -c 'npx esbuild ts/*.ts ts/modules/*.ts --outdir=./data/web/js/ --minify'
